@@ -1,0 +1,7 @@
+name: Admin Audit Trail
+description: 'Logs general CUD events performed by the user (using the forms) on the website.'
+type: module
+core: '8.x'
+core_version_requirement: ^8 || ^9
+package: Administration
+configure: admin_audit_trail.report_form

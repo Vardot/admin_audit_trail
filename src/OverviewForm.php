@@ -1,0 +1,266 @@
+<?php
+
+namespace Drupal\admin_audit_trail;
+
+use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Render\Markup;
+use Drupal\Core\Url;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\HtmlCommand;
+use \Drupal\user\Entity\User;
+use Drupal\Core\Link;
+
+/**
+ * Configure user settings for this site.
+ */
+class OverviewForm extends FormBase {
+  
+  /**
+   * @var array 
+   *  The form filters
+   */
+  private $filters = [];
+  
+  private function getUserData($uid) {
+    if (empty($uid)) {
+      return Markup::create('<em>' . $this->t('Anonymous') . '</em>');
+    }
+    $account = User::load($uid);
+    if (empty($account)) {
+      return Markup::create('<em>' . $this->t('@uid (deleted)', [
+        '@uid' => $uid,
+      ]) . '<em>');
+    }
+   return Link::fromTextAndUrl($account->getUsername(), Url::fromUri('internal:/user/' . $account->id()));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFormId() {
+    return 'admin_audit_trail_filter';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state) {
+    $form['filters'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Filters'),
+      '#description' => $this->t('Filter the events.'),
+      '#open' => TRUE,
+    ];
+
+    $handlers = admin_audit_trail_get_event_handlers();
+    $options = [];
+    foreach ($handlers as $type => $handler) {
+      $options[$type] = $handler['title'];
+    }
+    $form['filters']['type'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Type'),
+      '#description' => $this->t('Event type'),
+      '#options' => ['' => $this->t('Select a type')] + $options,
+      '#ajax' => [
+        'callback' => '::formGetAjaxOperation',
+        'event' => 'change',
+      ],
+    ];
+
+    $form['filters']['operation'] = AdminAuditTrailStorage::formGetOperations(empty($form_state->getUserInput()['type']) ? '' : $form_state->getUserInput()['type']);
+
+    $form['filters']['user'] = [
+      '#type' => 'entity_autocomplete',
+      '#target_type' => 'user',
+      '#selection_settings' => ['include_anonymous' => FALSE],
+      '#title' => $this->t('User'),
+      '#description' => $this->t('The user that triggered this event.'),
+      '#size' => 30,
+      '#maxlength' => 60,
+    ];
+
+    $form['filters']['id'] = [
+      '#type' => 'textfield',
+      '#size' => 5,
+      '#title' => $this->t('ID'),
+      '#description' => $this->t('The id of the events (numeric).'),
+    ];
+
+    $form['filters']['ip'] = [
+      '#type' => 'textfield',
+      '#size' => 20,
+      '#title' => $this->t('IP'),
+      '#description' => $this->t('The ip address of the visitor.'),
+    ];
+
+    $form['filters']['name'] = [
+      '#type' => 'textfield',
+      '#size' => 10,
+      '#title' => $this->t('Name'),
+      '#description' => $this->t('The name or machine name.'),
+    ];
+
+    $form['filters']['path'] = [
+      '#type' => 'textfield',
+      '#size' => 30,
+      '#title' => $this->t('Path'),
+      '#description' => $this->t('keyword in the path.'),
+    ];
+
+    $form['filters']['keyword'] = [
+      '#type' => 'textfield',
+      '#size' => 10,
+      '#title' => $this->t('Description'),
+      '#description' => $this->t('Keyword in the description.'),
+    ];
+
+    $form['filters']['submit'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Submit'),
+    ];
+
+    $header = [
+        [
+          'data' => $this->t('Updated'),
+          'field' => 'created',
+          'sort' => 'desc',
+        ],
+        ['data' => $this->t('Type'), 'field' => 'type'],
+        ['data' => $this->t('Operation'), 'field' => 'operation'],
+        ['data' => $this->t('Path'), 'field' => 'path'],
+        ['data' => $this->t('Description'), 'field' => 'description'],
+        ['data' => $this->t('User'), 'field' => 'uid'],
+        ['data' => $this->t('IP'), 'field' => 'ip'],
+        ['data' => $this->t('ID'), 'field' => 'ref_numeric'],
+        ['data' => $this->t('Name'), 'field' => 'ref_char'],
+    ];
+
+    $this->getFiltersFromUrl($form);
+    $result = AdminAuditTrailStorage::getSearchData($this->filters, $header, 20);
+    
+    if (!empty($this->filters)) {
+      $form['filters']['reset'] = [
+        '#type' => 'submit',
+        '#value' => $this->t('Reset'),
+        '#limit_validation_errors' => [],
+        '#submit' => ['::resetForm'],
+      ];
+    }
+
+    $rows = [];
+    foreach ($result as $record) {
+      $userLink = $this->getUserData($record->uid);
+      $rows[] = [
+          ['data' => date("Y-m-d H:i:s", $record->created)],
+          ['data' => $record->type],
+          ['data' => $record->operation],
+          ['data' => $record->path],
+          ['data' => strip_tags($record->description)],
+          ['data' => $userLink],
+          ['data' => $record->ip],
+          ['data' => $record->ref_numeric],
+          ['data' => $record->ref_char],
+      ];
+    }
+
+    // Generate the table.
+    $build['config_table'] = [
+      '#theme' => 'table',
+      '#header' => $header,
+      '#rows' => $rows,
+      '#empty' => $this->t('No events found.'),
+    ];
+
+    // Finally add the pager.
+    $build['pager'] = [
+      '#type' => 'pager',
+      '#parameters' => $this->filters,
+    ];
+    $form['results'] = $build;
+
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    $form_state->disableRedirect();
+    $form_state->setRebuild();
+    $this->setFilters($form_state);
+  }
+
+  /**
+   * Resets all the states of the form.
+   *
+   * This method is called when the "Reset" button is triggered. Clears
+   * user inputs and the form state.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   */
+  public function resetForm(array &$form, FormStateInterface $form_state) {
+    $form_state->setRedirect('<current>');
+    $form_state->setValues([]);
+    $this->filters = []];
+  }
+  
+  /**
+   * Retrieves form filters from the URL.
+   * 
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   */
+  public function getFiltersFromUrl(&$form) {
+    $url_params = \Drupal::request()->query->all();
+    if (!empty($url_params)) {
+      unset($url_params['page']);
+      $this->filters = $url_params;    
+      foreach ($this->filters as $field => $value) {
+        if ($field === "user") {
+          $user = User::load($value);
+          $form['filters'][$field]['#default_value'] = $user;
+        }
+        else
+          $form['filters'][$field]['#default_value'] = $value;
+      }
+    }
+  }
+
+  /**
+   * Stores form filters in the URL.
+   * 
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   */
+  public function setFilters(FormStateInterface $form_state) {
+    $this->filters = [];
+    $values = $form_state->getValues();
+    foreach($values as $field => $value) {
+      if ($field === 'submit')
+        break;
+      else if (isset($value) && $value !== "")  {
+        $this->filters[$field] = $value;
+      }
+    }
+    \Drupal::request()->query->replace($this->filters);
+  }
+
+  /**
+   * Ajax callback for the operations options.
+   */
+  public function formGetAjaxOperation(array &$form, FormStateInterface $form_state) {
+    $ajax_response = new AjaxResponse();
+
+    $element = AdminAuditTrailStorage::formGetOperations($form_state->getValue('type'));
+    $ajax_response->addCommand(new HtmlCommand('#operation-dropdown-replace', $element));
+
+    return $ajax_response;
+  }
+
+}

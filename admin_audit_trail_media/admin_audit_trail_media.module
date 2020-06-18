@@ -1,0 +1,82 @@
+<?php
+
+/**
+ * @file
+ * Logs media entity CUD commands in the admin_audit_trail module.
+ */
+
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_admin_audit_trail_handlers().
+ */
+function admin_audit_trail_media_admin_audit_trail_handlers() {
+  $handlers = [];
+  // Media event log handler.
+  $handlers['media'] = [
+    'title' => t('Media'),
+  ];
+
+  return $handlers;
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert().
+ */
+function admin_audit_trail_media_insert(EntityInterface $entity) {
+  $log = [
+    'type' => 'media',
+    'operation' => 'insert',
+    'description' => t('%title (%type)%revision_log', [
+      '%type' => $entity->bundle(),
+      '%title' => $entity->getName(),
+      '%revision_log' => $entity->getRevisionLogMessage() ? ': ' . $entity->getRevisionLogMessage() : '',
+    ]),
+    'ref_numeric' => $entity->id(),
+    'ref_char' => Html::escape($entity->label()),
+  ];
+
+  // Insert log.
+  admin_audit_trail_insert($log);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_update().
+ */
+function admin_audit_trail_media_update(EntityInterface $entity) {
+  $log = [
+    'type' => 'media',
+    'operation' => 'update',
+    'description' => t('%title (%type)%revision_log', [
+      '%type' => $entity->bundle(),
+      '%title' => $entity->getName(),
+      '%revision_log' => $entity->getRevisionLogMessage() ? ': ' . $entity->getRevisionLogMessage() : '',
+    ]),
+    'ref_numeric' => $entity->id(),
+    'ref_char' => Html::escape($entity->label()),
+  ];
+
+  // Insert log.
+  admin_audit_trail_insert($log);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_delete().
+ */
+function admin_audit_trail_media_delete(EntityInterface $entity) {
+  $log = [
+    'type' => 'media',
+    'operation' => 'delete',
+    'description' => t('%title (%type)%revision_log', [
+      '%type' => $entity->bundle(),
+      '%title' => $entity->getName(),
+      '%revision_log' => $entity->getRevisionLogMessage() ? ': ' . $entity->getRevisionLogMessage() : '',
+    ]),
+    'ref_numeric' => $entity->id(),
+    'ref_char' => Html::escape($entity->label()),
+  ];
+
+  // Insert log.
+  admin_audit_trail_insert($log);
+}

@@ -1,0 +1,83 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the admin_audit_trail module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function admin_audit_trail_schema() {
+  $schema['admin_audit_trail'] = [
+    'description' => 'Logged events by the admin_audit_trail module.',
+    'fields' => [
+      'lid' => [
+        'description' => 'Log id.',
+        'type' => 'serial',
+        'not null' => TRUE,
+      ],
+      'type' => [
+        'description' => 'Event handler type.',
+        'type' => 'varchar',
+        'length' => '50',
+        'not null' => TRUE,
+      ],
+      'operation' => [
+        'description' => 'The operation performed.',
+        'type' => 'varchar',
+        'length' => '50',
+        'not null' => TRUE,
+      ],
+      'path' => [
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Current path.',
+      ],
+      'ref_numeric' => [
+        'description' => 'A numeric value that can be used to reference an object.',
+        'type' => 'int',
+        'not null' => FALSE,
+      ],
+      'ref_char' => [
+        'description' => 'A character value that can be used to reference an object.',
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => FALSE,
+      ],
+      'description' => [
+        'description' => 'Description of the event, in HTML.',
+        'type' => 'text',
+        'size' => 'medium',
+        'not null' => TRUE,
+      ],
+      'uid' => [
+        'description' => 'User id that triggered this event (0 = anonymous user).',
+        'type' => 'int',
+        'not null' => TRUE,
+      ],
+      'ip' => [
+        'description' => 'IP address of the visitor that triggered this event.',
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => FALSE,
+      ],
+      'created' => [
+        'description' => 'The event timestamp.',
+        'type' => 'int',
+        'not null' => TRUE,
+      ],
+    ],
+    'primary key' => ['lid'],
+    'indexes' => [
+      'created' => ['created'],
+      'user' => ['uid', 'ip'],
+      'ip' => ['ip'],
+      'join' => ['type', 'operation', 'ref_numeric', 'ref_char'],
+    ],
+  ];
+
+  return $schema;
+}
