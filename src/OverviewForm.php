@@ -207,7 +207,7 @@ class OverviewForm extends FormBase {
   public function resetForm(array &$form, FormStateInterface $form_state) {
     $form_state->setRedirect('<current>');
     $form_state->setValues([]);
-    $this->filters = []];
+    $this->filters = [];
   }
   
   /**
