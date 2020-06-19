@@ -33,7 +33,7 @@ class OverviewForm extends FormBase {
         '@uid' => $uid,
       ]) . '<em>');
     }
-   return Link::fromTextAndUrl($account->getUsername(), Url::fromUri('internal:/user/' . $account->id()));
+   return Link::fromTextAndUrl($account->getDisplayname(), Url::fromUri('internal:/user/' . $account->id()));
   }
 
   /**
