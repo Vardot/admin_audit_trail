@@ -19,15 +19,6 @@ class AdminController extends ControllerBase {
   protected $formBuilder;
 
   /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-            $container->get('form_builder')
-    );
-  }
-
-  /**
    * Constructs an AdminController object.
    *
    * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
@@ -35,6 +26,15 @@ class AdminController extends ControllerBase {
    */
   public function __construct(FormBuilderInterface $form_builder) {
     $this->formBuilder = $form_builder;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('form_builder')
+    );
   }
 
   /**

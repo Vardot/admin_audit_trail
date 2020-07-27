@@ -11,7 +11,7 @@ use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Link;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
@@ -20,11 +20,11 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 class OverviewForm extends FormBase implements ContainerInjectionInterface {
 
   /**
-   * The current request.
+   * The request object.
    *
-   * @var \Symfony\Component\HttpFoundation\Request
+   * @var \Symfony\Component\HttpFoundation\RequestStack
    */
-  protected $currentRequest;
+  protected $requestStack;
 
   /**
    * The entity type manager.
@@ -36,16 +36,16 @@ class OverviewForm extends FormBase implements ContainerInjectionInterface {
   /**
    * Overview form construct.
    *
-   * @param \Symfony\Component\HttpFoundation\Request $current_request
-   *   The current request.
+   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
+   *   The request stack object.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
    */
   public function __construct(
-    Request $current_request,
+    RequestStack $request_stack,
     EntityTypeManagerInterface $entity_type_manager
   ) {
-    $this->currentRequest = $current_request;
+    $this->requestStack = $request_stack;
     $this->entityTypeManager = $entity_type_manager;
   }
 
@@ -54,7 +54,7 @@ class OverviewForm extends FormBase implements ContainerInjectionInterface {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('request_stack')->getCurrentRequest(),
+      $container->get('request_stack'),
       $container->get('entity_type.manager')
     );
   }
@@ -270,7 +270,7 @@ class OverviewForm extends FormBase implements ContainerInjectionInterface {
    *   An associative array containing the structure of the form.
    */
   public function getFiltersFromUrl(array &$form) {
-    $url_params = $this->currentRequest->query->all();
+    $url_params = $this->requestStack->getCurrentRequest()->query->all();
     if (!empty($url_params)) {
       unset($url_params['page']);
       $this->filters = $url_params;
@@ -303,7 +303,7 @@ class OverviewForm extends FormBase implements ContainerInjectionInterface {
         $this->filters[$field] = $value;
       }
     }
-    $this->currentRequest->query->replace($this->filters);
+    $this->requestStack->getCurrentRequest()->query->replace($this->filters);
   }
 
   /**
