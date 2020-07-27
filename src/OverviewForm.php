@@ -8,13 +8,55 @@ use Drupal\Core\Render\Markup;
 use Drupal\Core\Url;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
-use Drupal\user\Entity\User;
 use Drupal\Core\Link;
+use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Configure user settings for this site.
  */
-class OverviewForm extends FormBase {
+class OverviewForm extends FormBase implements ContainerInjectionInterface {
+
+  /**
+   * The current request.
+   *
+   * @var \Symfony\Component\HttpFoundation\Request
+   */
+  protected $currentRequest;
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * Overview form construct.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $current_request
+   *   The current request.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   */
+  public function __construct(
+    Request $current_request,
+    EntityTypeManagerInterface $entity_type_manager
+  ) {
+    $this->currentRequest = $current_request;
+    $this->entityTypeManager = $entity_type_manager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('request_stack')->getCurrentRequest(),
+      $container->get('entity_type.manager')
+    );
+  }
 
   /**
    * Filters.
@@ -37,7 +79,7 @@ class OverviewForm extends FormBase {
     if (empty($uid)) {
       return Markup::create('<em>' . $this->t('Anonymous') . '</em>');
     }
-    $account = User::load($uid);
+    $account = $this->entityTypeManager()->getStorage('user')->load($uid);
     if (empty($account)) {
       return Markup::create('<em>' . $this->t('@uid (deleted)', [
         '@uid' => $uid,
@@ -227,13 +269,13 @@ class OverviewForm extends FormBase {
    *   An associative array containing the structure of the form.
    */
   public function getFiltersFromUrl(array &$form) {
-    $url_params = \Drupal::request()->query->all();
+    $url_params = $this->currentRequest->query->all();
     if (!empty($url_params)) {
       unset($url_params['page']);
       $this->filters = $url_params;
       foreach ($this->filters as $field => $value) {
         if ($field === "user") {
-          $user = User::load($value);
+          $user = $this->entityTypeManager()->getStorage('user')->load($value);
           $form['filters'][$field]['#default_value'] = $user;
         }
         else {
@@ -260,7 +302,7 @@ class OverviewForm extends FormBase {
         $this->filters[$field] = $value;
       }
     }
-    \Drupal::request()->query->replace($this->filters);
+    $this->currentRequest->query->replace($this->filters);
   }
 
   /**
