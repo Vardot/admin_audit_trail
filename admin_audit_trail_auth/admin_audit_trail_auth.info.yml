@@ -1,8 +1,8 @@
-name: Admin Audit Trail User Authentication
+name: 'Admin Audit Trail User Authentication'
 description: 'Logs user authentication (login logout and request password).'
 type: module
-dependencies:
-  - admin_audit_trail:admin_audit_trail
-core: '8.x'
+core: 8.x
 core_version_requirement: ^8 || ^9
 package: Administration
+dependencies:
+  - admin_audit_trail:admin_audit_trail

@@ -1,9 +1,9 @@
-name: Admin Audit Trail Media
+name: 'Admin Audit Trail Media'
 description: 'Logs node CUD events performed by the user.'
 type: module
+core: 8.x
+core_version_requirement: ^8 || ^9
+package: Administration
 dependencies:
   - admin_audit_trail:admin_audit_trail
   - drupal:media
-core: '8.x'
-core_version_requirement: ^8 || ^9
-package: Administration

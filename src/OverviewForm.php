@@ -4,25 +4,35 @@ namespace Drupal\admin_audit_trail;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Component\Utility\Html;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Url;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
-use \Drupal\user\Entity\User;
+use Drupal\user\Entity\User;
 use Drupal\Core\Link;
 
 /**
  * Configure user settings for this site.
  */
 class OverviewForm extends FormBase {
-  
+
   /**
-   * @var array 
+   * Filters.
+   *
+   * @var array
    *  The form filters
    */
   private $filters = [];
-  
+
+  /**
+   * Get User data.
+   *
+   * @param int $uid
+   *   The user ID.
+   *
+   * @return Drupal\Core\Link
+   *   The internal link for the user.
+   */
   private function getUserData($uid) {
     if (empty($uid)) {
       return Markup::create('<em>' . $this->t('Anonymous') . '</em>');
@@ -33,7 +43,7 @@ class OverviewForm extends FormBase {
         '@uid' => $uid,
       ]) . '<em>');
     }
-   return Link::fromTextAndUrl($account->getDisplayname(), Url::fromUri('internal:/user/' . $account->id()));
+    return Link::fromTextAndUrl($account->getDisplayname(), Url::fromUri('internal:/user/' . $account->id()));
   }
 
   /**
@@ -140,7 +150,7 @@ class OverviewForm extends FormBase {
 
     $this->getFiltersFromUrl($form);
     $result = AdminAuditTrailStorage::getSearchData($this->filters, $header, 20);
-    
+
     if (!empty($this->filters)) {
       $form['filters']['reset'] = [
         '#type' => 'submit',
@@ -209,42 +219,44 @@ class OverviewForm extends FormBase {
     $form_state->setValues([]);
     $this->filters = [];
   }
-  
+
   /**
    * Retrieves form filters from the URL.
-   * 
+   *
    * @param array $form
    *   An associative array containing the structure of the form.
    */
-  public function getFiltersFromUrl(&$form) {
+  public function getFiltersFromUrl(array &$form) {
     $url_params = \Drupal::request()->query->all();
     if (!empty($url_params)) {
       unset($url_params['page']);
-      $this->filters = $url_params;    
+      $this->filters = $url_params;
       foreach ($this->filters as $field => $value) {
         if ($field === "user") {
           $user = User::load($value);
           $form['filters'][$field]['#default_value'] = $user;
         }
-        else
+        else {
           $form['filters'][$field]['#default_value'] = $value;
+        }
       }
     }
   }
 
   /**
    * Stores form filters in the URL.
-   * 
+   *
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    */
   public function setFilters(FormStateInterface $form_state) {
     $this->filters = [];
     $values = $form_state->getValues();
-    foreach($values as $field => $value) {
-      if ($field === 'submit')
+    foreach ($values as $field => $value) {
+      if ($field === 'submit') {
         break;
-      else if (isset($value) && $value !== "")  {
+      }
+      elseif (isset($value) && $value !== "") {
         $this->filters[$field] = $value;
       }
     }

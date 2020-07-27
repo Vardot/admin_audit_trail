@@ -11,11 +11,11 @@ use Drupal\Core\Entity\EntityInterface;
  * Implements hook_admin_audit_trail_handlers().
  */
 function admin_audit_trail_file_admin_audit_trail_handlers() {
-  $handlers = array();
-  // File event log handler
-  $handlers['file'] = array(
+  $handlers = [];
+  // File event log handler.
+  $handlers['file'] = [
     'title' => t('File'),
-  );
+  ];
 
   return $handlers;
 }

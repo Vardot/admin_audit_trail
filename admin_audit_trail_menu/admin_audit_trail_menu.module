@@ -5,7 +5,7 @@
  * Logs menu CUD commands in the admin_audit_trail module.
  */
 
-use \Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Implements hook_admin_audit_trail_handlers().
