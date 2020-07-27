@@ -80,7 +80,7 @@ class OverviewForm extends FormBase implements ContainerInjectionInterface {
     if (empty($uid)) {
       return Markup::create('<em>' . $this->t('Anonymous') . '</em>');
     }
-    $account = $this->entityTypeManager()->getStorage('user')->load($uid);
+    $account = $this->entityTypeManager->getStorage('user')->load($uid);
     if (empty($account)) {
       return Markup::create('<em>' . $this->t('@uid (deleted)', [
         '@uid' => $uid,
@@ -276,7 +276,7 @@ class OverviewForm extends FormBase implements ContainerInjectionInterface {
       $this->filters = $url_params;
       foreach ($this->filters as $field => $value) {
         if ($field === "user") {
-          $user = $this->entityTypeManager()->getStorage('user')->load($value);
+          $user = $this->entityTypeManager->getStorage('user')->load($value);
           $form['filters'][$field]['#default_value'] = $user;
         }
         else {
