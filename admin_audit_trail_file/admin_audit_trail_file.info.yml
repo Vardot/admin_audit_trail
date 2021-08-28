@@ -1,5 +1,5 @@
-name: 'Admin Audit Trail File'
-description: 'Logs file CUD events performed by the user.'
+name: "Admin Audit Trail File"
+description: "Logs file CUD events performed by the user."
 type: module
 core_version_requirement: ^8 || ^9
 package: Administration

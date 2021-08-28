@@ -1,5 +1,5 @@
-name: 'Admin Audit Trail User Authentication'
-description: 'Logs user authentication (login logout and request password).'
+name: "Admin Audit Trail User Authentication"
+description: "Logs user authentication (login logout and request password)."
 type: module
 core_version_requirement: ^8 || ^9
 package: Administration

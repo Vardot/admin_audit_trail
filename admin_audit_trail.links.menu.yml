@@ -1,6 +1,6 @@
 admin_audit_trail.report_form:
-  title: 'Admin audit trail'
+  title: "Admin audit trail"
   parent: system.admin_reports
-  description: 'Get report about cud operation performed by the user on the website.'
+  description: "Get report about cud operation performed by the user on the website."
   weight: -5
   route_name: admin_audit_trail.report_form

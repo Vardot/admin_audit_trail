@@ -1,7 +1,7 @@
 admin_audit_trail.report_form:
-  path: '/admin/reports/audit-trail'
+  path: "/admin/reports/audit-trail"
   defaults:
-    _controller: '\Drupal\admin_audit_trail\Controller\AdminController::adminPage'
-    _title: 'Admin audit trails'
+    _controller: "\\Drupal\\admin_audit_trail\\Controller\\AdminController::adminPage"
+    _title: "Admin audit trails"
   requirements:
-    _permission: 'access admin audit trail'
+    _permission: "access admin audit trail"
