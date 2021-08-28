@@ -1,0 +1,7 @@
+name: "Admin Audit Trail Block Content"
+description: "Logs block content CUD events performed by the user."
+type: module
+core_version_requirement: ^8 || ^9
+package: Administration
+dependencies:
+  - admin_audit_trail:admin_audit_trail
