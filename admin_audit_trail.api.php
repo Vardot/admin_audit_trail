@@ -29,3 +29,23 @@ function hook_admin_audit_trail_handlers() {
 
   return $handlers;
 }
+
+/**
+ * Allows for the altering of the log array.
+ *
+ * @param array $log
+ *   The log record to be altered. This record contains the following fields:
+ *   - {string} type
+ *     The event type. This is usually the object type that is described by this
+ *     event. Example: 'node' or 'user'. Required.
+ *   - {string} operation
+ *     The operation being performed. Example: 'insert'. Required.
+ *   - {string} description
+ *     A textual description of the event. Required.
+ *   - {string} ref_numeric
+ *     Reference to numeric id. Optional.
+ *   - {string} ref_char
+ *     Reference to alphabetical id. Optional.
+ */
+function hook_admin_audit_trail_log_alter(&$log) {
+}

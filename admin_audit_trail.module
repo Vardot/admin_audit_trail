@@ -89,6 +89,9 @@ function admin_audit_trail_insert(array &$log) {
     $log['ref_numeric'] = NULL;
   }
 
+  // Allow the altering of the log array.
+  \Drupal::service('module_handler')->invokeAll('admin_audit_trail_log_alter', ['log' => &$log]);
+
   \Drupal::database()->merge('admin_audit_trail')
     ->key('lid')
     ->fields([
