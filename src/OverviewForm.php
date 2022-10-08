@@ -5,10 +5,10 @@ namespace Drupal\admin_audit_trail;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Markup;
-use Drupal\Core\Url;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Link;
+use Drupal\Core\Url;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -73,7 +73,7 @@ class OverviewForm extends FormBase implements ContainerInjectionInterface {
    * @param int $uid
    *   The user ID.
    *
-   * @return Drupal\Core\Link
+   * @return \Drupal\Core\Link
    *   The internal link for the user.
    */
   private function getUserData($uid) {
@@ -86,7 +86,7 @@ class OverviewForm extends FormBase implements ContainerInjectionInterface {
         '@uid' => $uid,
       ]) . '<em>');
     }
-    return Link::fromTextAndUrl($account->getDisplayname(), Url::fromUri('internal:/user/' . $account->id()));
+    return Link::fromTextAndUrl((string) $account->getDisplayName(), Url::fromUri('internal:/user/' . $account->id()));
   }
 
   /**

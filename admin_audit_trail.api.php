@@ -47,5 +47,5 @@ function hook_admin_audit_trail_handlers() {
  *   - {string} ref_char
  *     Reference to alphabetical id. Optional.
  */
-function hook_admin_audit_trail_log_alter(&$log) {
+function hook_admin_audit_trail_log_alter(array &$log) {
 }

@@ -7,7 +7,7 @@
   <exclude-pattern>*/node_modules/*</exclude-pattern>
   <exclude-pattern>*/bower_components/*</exclude-pattern>
 
-  <!-- Only include specific sniffs that pass. This ensures that, if new sniffs are added, HEAD does not fail.-->
+ <!-- Only include specific sniffs that pass. This ensures that, if new sniffs are added, HEAD does not fail.-->
   <!-- Drupal sniffs -->
   <rule ref="Drupal.Arrays.Array">
     <!-- Sniff for these errors: CommaLastItem -->

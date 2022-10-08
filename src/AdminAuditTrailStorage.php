@@ -2,6 +2,10 @@
 
 namespace Drupal\admin_audit_trail;
 
+use Drupal\Core\Database\Database;
+use Drupal\Core\Database\Query\PagerSelectExtender;
+use Drupal\Core\Database\Query\TableSortExtender;
+
 /**
  * Controller class for admin audit trail required special handling for events.
  */
@@ -22,13 +26,15 @@ class AdminAuditTrailStorage {
    */
   public static function getSearchData(array $getData, array $header, $limit = NULL) {
 
-    $db = \Drupal::database();
-    $query = $db->select('admin_audit_trail', 'e');
+    $query = Database::getConnection()->select('admin_audit_trail', 'e');
     $query->fields('e');
 
-    $table_sort = $query->extend('Drupal\Core\Database\Query\TableSortExtender')
+    /** @var \Drupal\Core\Database\Query\TableSortExtender $query */
+    $query->extend(TableSortExtender::class)
       ->orderByHeader($header);
-    $pager = $table_sort->extend('Drupal\Core\Database\Query\PagerSelectExtender')
+
+    /** @var \Drupal\Core\Database\Query\PagerSelectExtender $query */
+    $query->extend(PagerSelectExtender::class)
       ->limit($limit);
 
     // Apply filters.
@@ -56,7 +62,7 @@ class AdminAuditTrailStorage {
     if (!empty($getData['user'])) {
       $query->condition('uid', $getData['user']);
     }
-    $result = $pager->execute();
+    $result = $query->execute();
 
     return $result;
   }
@@ -81,8 +87,7 @@ class AdminAuditTrailStorage {
       '#suffix' => '</div>',
     ];
     if ($type) {
-      $db = \Drupal::database();
-      $query = $db->select('admin_audit_trail', 'e')
+      $query = Database::getConnection()->select('admin_audit_trail', 'e')
         ->fields('e', ['operation'])
         ->condition('type', $type)
         ->groupBy('operation');

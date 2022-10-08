@@ -5,7 +5,7 @@
  * Logs file entity CUD commands in the admin_audit_trail module.
  */
 
-use Drupal\Core\Entity\EntityInterface;
+use Drupal\file\Entity\File;
 
 /**
  * Implements hook_admin_audit_trail_handlers().
@@ -23,13 +23,13 @@ function admin_audit_trail_file_admin_audit_trail_handlers() {
 /**
  * Implements hook_ENTITY_TYPE_insert().
  */
-function admin_audit_trail_file_insert(EntityInterface $entity) {
+function admin_audit_trail_file_insert(File $file) {
   $log = [
     'type' => 'file',
     'operation' => 'insert',
-    'description' => $entity->getFileUri(),
-    'ref_numeric' => $entity->id(),
-    'ref_char' => $entity->getFilename(),
+    'description' => $file->getFileUri(),
+    'ref_numeric' => $file->id(),
+    'ref_char' => $file->getFilename(),
   ];
 
   // Insert log.
@@ -39,13 +39,13 @@ function admin_audit_trail_file_insert(EntityInterface $entity) {
 /**
  * Implements hook_ENTITY_TYPE_update().
  */
-function admin_audit_trail_file_update(EntityInterface $entity) {
+function admin_audit_trail_file_update(File $file) {
   $log = [
     'type' => 'file',
     'operation' => 'update',
-    'description' => $entity->getFileUri(),
-    'ref_numeric' => $entity->id(),
-    'ref_char' => $entity->getFilename(),
+    'description' => $file->getFileUri(),
+    'ref_numeric' => $file->id(),
+    'ref_char' => $file->getFilename(),
   ];
 
   // Insert log.
@@ -55,13 +55,13 @@ function admin_audit_trail_file_update(EntityInterface $entity) {
 /**
  * Implements hook_ENTITY_TYPE_delete().
  */
-function admin_audit_trail_file_delete(EntityInterface $entity) {
+function admin_audit_trail_file_delete(File $file) {
   $log = [
     'type' => 'file',
     'operation' => 'delete',
-    'description' => $entity->getFileUri(),
-    'ref_numeric' => $entity->id(),
-    'ref_char' => $entity->getFilename(),
+    'description' => $file->getFileUri(),
+    'ref_numeric' => $file->id(),
+    'ref_char' => $file->getFilename(),
   ];
 
   // Insert log.
