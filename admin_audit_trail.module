@@ -76,7 +76,7 @@ function admin_audit_trail_insert(array &$log) {
     $log['uid'] = $account->id();
   }
 
-  $ip = Drupal::request()->getClientIp();
+  $ip = \Drupal::request()->getClientIp();
   if (empty($log['ip']) && !empty($ip)) {
     $log['ip'] = $ip;
   }
@@ -100,7 +100,7 @@ function admin_audit_trail_insert(array &$log) {
       'description' => $log['description'],
       'created' => $log['created'],
       'uid' => $log['uid'],
-      'ip' => $log['ip'],
+      'ip' => $log['ip'] ?? '',
       'path' => $log['path'],
       'ref_char' => $log['ref_char'],
       'ref_numeric' => $log['ref_numeric'],
