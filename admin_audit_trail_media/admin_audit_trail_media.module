@@ -5,7 +5,6 @@
  * Logs media entity CUD commands in the admin_audit_trail module.
  */
 
-use Drupal\Component\Utility\Html;
 use Drupal\Core\Entity\EntityInterface;
 
 /**
@@ -34,7 +33,7 @@ function admin_audit_trail_media_insert(EntityInterface $entity) {
       '%revision_log' => $entity->getRevisionLogMessage() ? ': ' . $entity->getRevisionLogMessage() : '',
     ]),
     'ref_numeric' => $entity->id(),
-    'ref_char' => Html::escape($entity->label()),
+    'ref_char' => $entity->label(),
   ];
 
   // Insert log.
@@ -54,7 +53,7 @@ function admin_audit_trail_media_update(EntityInterface $entity) {
       '%revision_log' => $entity->getRevisionLogMessage() ? ': ' . $entity->getRevisionLogMessage() : '',
     ]),
     'ref_numeric' => $entity->id(),
-    'ref_char' => Html::escape($entity->label()),
+    'ref_char' => $entity->label(),
   ];
 
   // Insert log.
@@ -74,7 +73,7 @@ function admin_audit_trail_media_delete(EntityInterface $entity) {
       '%revision_log' => $entity->getRevisionLogMessage() ? ': ' . $entity->getRevisionLogMessage() : '',
     ]),
     'ref_numeric' => $entity->id(),
-    'ref_char' => Html::escape($entity->label()),
+    'ref_char' => $entity->label(),
   ];
 
   // Insert log.
