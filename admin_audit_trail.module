@@ -92,20 +92,29 @@ function admin_audit_trail_insert(array &$log) {
   // Allow the altering of the log array.
   \Drupal::service('module_handler')->invokeAll('admin_audit_trail_log_alter', ['log' => &$log]);
 
-  \Drupal::database()->merge('admin_audit_trail')
-    ->key('lid')
-    ->fields([
-      'type' => $log['type'],
-      'operation' => $log['operation'],
-      'description' => $log['description'],
-      'created' => $log['created'],
-      'uid' => $log['uid'],
-      'ip' => $log['ip'] ?? '',
-      'path' => $log['path'],
-      'ref_char' => $log['ref_char'],
-      'ref_numeric' => $log['ref_numeric'],
-    ])
-    ->execute();
+  $fields = [
+    'type' => $log['type'],
+    'operation' => $log['operation'],
+    'description' => $log['description'],
+    'created' => $log['created'],
+    'uid' => $log['uid'],
+    'ip' => $log['ip'],
+    'path' => $log['path'],
+    'ref_char' => $log['ref_char'],
+    'ref_numeric' => $log['ref_numeric'],
+  ];
+
+  if (isset($log['lid'])) {
+    \Drupal::database()->update('admin_audit_trail')
+      ->fields($fields)
+      ->condition('lid', $log['lid'])
+      ->execute();
+  }
+  else {
+    \Drupal::database()->insert('admin_audit_trail')
+      ->fields($fields)
+      ->execute();
+  }
 }
 
 /**
