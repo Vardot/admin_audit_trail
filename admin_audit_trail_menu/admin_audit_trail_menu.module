@@ -15,75 +15,8 @@ function admin_audit_trail_menu_admin_audit_trail_handlers() {
 
   $handlers['menu'] = [
     'title' => t('Menu'),
-    'form_ids' => [
-      'menu_link_content_menu_link_content_form',
-      'menu_link_content_menu_link_content_delete_form',
-    ],
-    'form_submit_callback' => 'admin_audit_trail_menu_form_submit',
   ];
   return $handlers;
-}
-
-/**
- * Event log callback for the user authentication event log.
- *
- * @return array
- *   Return an associative array to log data in database.
- */
-function admin_audit_trail_menu_form_submit(array &$form, FormStateInterface $form_state, $form_id) {
-  $log = NULL;
-
-  switch ($form_id) {
-    case 'menu_link_content_menu_link_content_form':
-      $menu = $form_state->getValues();
-      $get_title = $menu['title'][0]['value'];
-      $get_path = $menu['link'][0]['uri'];
-      $get_menu_parent = substr($menu['menu_parent'], 0, -1);
-      $route_parameters = \Drupal::routeMatch()->getParameter('menu_link_content');
-
-      if (empty($route_parameters)) {
-        // Insert Menu Link.
-        $log = [
-          'operation' => 'link insert',
-          'description' => t('%title, %path', [
-            '%title' => $get_title,
-            '%path' => $get_path,
-          ]),
-          'ref_char' => $get_menu_parent,
-        ];
-      }
-      else {
-        // Update Menu Link.
-        $log = [
-          'operation' => 'link update',
-          'description' => t('%title (%id), %path', [
-            '%title' => $get_title,
-            '%id' => $route_parameters->get('id')->value,
-            '%path' => $get_path,
-          ]),
-          'ref_numeric' => $route_parameters->get('id')->value,
-          'ref_char' => $route_parameters->getMenuName(),
-        ];
-      }
-      break;
-
-    case 'menu_link_content_menu_link_content_delete_form':
-      // Delete Menu Link.
-      $route_parameters = \Drupal::routeMatch()->getParameter('menu_link_content');
-      $uri = $route_parameters->get('link')->uri;
-      $log = [
-        'operation' => 'link delete',
-        'description' => t('%title (%id), %path', [
-          '%title' => $route_parameters->getTitle(),
-          '%id' => $route_parameters->get('id')->value,
-          '%path' => $uri,
-        ]),
-        'ref_numeric' => $route_parameters->get('id')->value,
-        'ref_char' => $route_parameters->getMenuName(),
-      ];
-      break;
-  }
-  return $log;
 }
 
 /**
@@ -131,5 +64,62 @@ function admin_audit_trail_menu_menu_delete($menu) {
     ]),
     'ref_char' => $menu->get('id'),
   ];
+  admin_audit_trail_insert($log);
+}
+
+/**
+ * Implements hook_menu_link_insert().
+ */
+function admin_audit_trail_menu_menu_link_content_insert($link) {
+  $log = [
+    'type' => 'menu',
+    'operation' => 'link insert',
+    'description' => t('%title (%id), %path', [
+      '%title' => $link->getTitle(),
+      '%id' => $link->id(),
+      '%path' => $link->get('link')->uri,
+    ]),
+    'ref_numeric' => $link->id(),
+    'ref_char' => $link->getMenuName(),
+  ];
+
+  admin_audit_trail_insert($log);
+}
+
+/**
+ * Implements hook_menu_link_update().
+ */
+function admin_audit_trail_menu_menu_link_content_update($link) {
+  $log = [
+    'type' => 'menu',
+    'operation' => 'link update',
+    'description' => t('%title (%id), %path', [
+      '%title' => $link->getTitle(),
+      '%id' => $link->id(),
+      '%path' => $link->get('link')->uri,
+    ]),
+    'ref_numeric' => $link->id(),
+    'ref_char' => $link->getMenuName(),
+  ];
+
+  admin_audit_trail_insert($log);
+}
+
+/**
+ * Implements hook_menu_link_delete().
+ */
+function admin_audit_trail_menu_menu_link_content_delete($link) {
+  $log = [
+    'type' => 'menu',
+    'operation' => 'link delete',
+    'description' => t('%title (%id), %path', [
+      '%title' => $link->getTitle(),
+      '%id' => $link->id(),
+      '%path' => $link->get('link')->uri,
+    ]),
+    'ref_numeric' => $link->id(),
+    'ref_char' => $link->getMenuName(),
+  ];
+
   admin_audit_trail_insert($log);
 }
