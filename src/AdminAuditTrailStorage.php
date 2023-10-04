@@ -26,16 +26,10 @@ class AdminAuditTrailStorage {
    */
   public static function getSearchData(array $getData, array $header, $limit = NULL) {
 
-    $query = Database::getConnection()->select('admin_audit_trail', 'e');
-    $query->fields('e');
-
     /** @var \Drupal\Core\Database\Query\TableSortExtender $query */
-    $query->extend(TableSortExtender::class)
-      ->orderByHeader($header);
-
     /** @var \Drupal\Core\Database\Query\PagerSelectExtender $query */
-    $query->extend(PagerSelectExtender::class)
-      ->limit($limit);
+    $query = Database::getConnection()->select('admin_audit_trail', 'e')->extend(TableSortExtender::class)->extend(PagerSelectExtender::class);
+    $query->fields('e');
 
     // Apply filters.
     if (!empty($getData['type'])) {
@@ -62,7 +56,7 @@ class AdminAuditTrailStorage {
     if (!empty($getData['user'])) {
       $query->condition('uid', $getData['user']);
     }
-    $result = $query->execute();
+    $result = $query->orderByHeader($header)->limit($limit)->execute();
 
     return $result;
   }
