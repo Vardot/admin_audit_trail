@@ -1,0 +1,10 @@
+name: "Admin Audit Trail Entityqueue"
+description: "Logs entityqueue CUD events performed by the user."
+type: module
+core_version_requirement: ^8 || ^9 || ^10
+package: Administration
+dependencies:
+  - admin_audit_trail:admin_audit_trail
+  - entityqueue:entityqueue
+  
+project: 'admin_audit_trail'
