@@ -98,7 +98,7 @@ function admin_audit_trail_insert(array &$log) {
     'description' => $log['description'],
     'created' => $log['created'],
     'uid' => $log['uid'],
-    'ip' => $log['ip'],
+    'ip' => $log['ip'] ?? '',
     'path' => $log['path'],
     'ref_char' => $log['ref_char'],
     'ref_numeric' => $log['ref_numeric'],
