@@ -208,3 +208,15 @@ function admin_audit_trail_add_submit_handler(array &$element, $callback) {
     }
   }
 }
+
+/**
+ * Truncate a string to a safe DB length.
+ */
+function admin_audit_trail_safe_truncate($value, $max_length = 255) {
+  if (!is_string($value)) {
+    return '';
+  }
+  return strlen($value) > $max_length
+    ? substr($value, 0, $max_length - 3) . '...'
+    : $value;
+}

@@ -94,13 +94,12 @@ function admin_audit_trail_auth_user_login_validate($form, &$form_state) {
   // Check for erros and log them.
   $errors = $form_state->getErrors();
   if (!empty($errors)) {
+    $name = admin_audit_trail_safe_truncate($form_state->getValue('name'), 255);
     $log = [
       'type' => 'authentication',
       'operation' => 'fail',
-      'description' => t('%user', [
-        '%user' => $form_state->getValue('name'),
-      ]),
-      'ref_char' => $form_state->getValue('name'),
+      'description' => t('%user', ['%user' => $name]),
+      'ref_char' => $name,
     ];
     admin_audit_trail_insert($log);
   }
