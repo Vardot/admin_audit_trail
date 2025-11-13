@@ -83,7 +83,7 @@ function admin_audit_trail_schema() {
 }
 
 /**
- * feat: #3197592 Add settings form to toggle filter expansion and limit audit log table size.
+ * Feat: #3197592 Add settings form to toggle filter expansion and limit audit log table size.
  */
 function admin_audit_trail_update_10001() {
   $config_factory = \Drupal::configFactory()->getEditable('admin_audit_trail.settings');

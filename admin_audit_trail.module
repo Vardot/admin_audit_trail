@@ -186,7 +186,7 @@ function admin_audit_trail_form_alter(&$form, FormStateInterface $form_state, $f
   // Check if this form is relevant for audit logging before adding the handler.
   $handlers = admin_audit_trail_get_event_handlers();
   $is_relevant = FALSE;
-  foreach ($handlers as $type => $handler) {
+  foreach ($handlers as $handler) {
     if (!empty($handler['form_ids']) && in_array($form_id, $handler['form_ids'])) {
       $is_relevant = TRUE;
       break;

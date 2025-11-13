@@ -6,5 +6,3 @@ package: Administration
 dependencies:
   - admin_audit_trail:admin_audit_trail
   - entityqueue:entityqueue
-  
-project: 'admin_audit_trail'

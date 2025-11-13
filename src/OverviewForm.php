@@ -54,7 +54,7 @@ class OverviewForm extends FormBase implements ContainerInjectionInterface {
   public function __construct(
     RequestStack $request_stack,
     EntityTypeManagerInterface $entity_type_manager,
-    ConfigFactoryInterface $config_factory
+    ConfigFactoryInterface $config_factory,
   ) {
     $this->requestStack = $request_stack;
     $this->entityTypeManager = $entity_type_manager;

@@ -26,7 +26,10 @@
     "once": true,
     "CKEDITOR": true,
     "CKEditor5": true,
-    "tabbable": true
+    "tabbable": true,
+    "domready": true,
+    "deprecate": true,
+    "displace": true
   },
   "rules": {
     "prettier/prettier": "error",
