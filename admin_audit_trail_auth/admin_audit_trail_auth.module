@@ -88,6 +88,23 @@ function admin_audit_trail_auth_form_user_login_form_alter(&$form, FormStateInte
 }
 
 /**
+ * Implements hook_user_login().
+ */
+function admin_audit_trail_auth_user_login($account) {
+  $log = [
+    'type' => 'authentication',
+    'operation' => 'login',
+    'description' => t('%user (uid %uid)', [
+      '%user' => $account->getDisplayName(),
+      '%uid' => $account->id(),
+    ]),
+    'ref_numeric' => $account->id(),
+    'ref_char' => $account->getDisplayName(),
+  ];
+  admin_audit_trail_insert($log);
+}
+
+/**
  * Implements hook_form_FORM_ID_validate().
  */
 function admin_audit_trail_auth_user_login_validate($form, &$form_state) {
