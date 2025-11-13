@@ -1,0 +1,8 @@
+name: "Admin Audit Trail Group"
+description: "Logs group CUD events performed by the group."
+type: module
+core_version_requirement: ^9 || ^10 || ^11
+package: Administration
+dependencies:
+  - admin_audit_trail:admin_audit_trail
+  - group:group
