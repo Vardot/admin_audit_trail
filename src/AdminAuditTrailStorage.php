@@ -76,6 +76,7 @@ class AdminAuditTrailStorage {
       '#name' => 'operation',
       '#title' => t('Operation'),
       '#description' => t('The entity operation.'),
+      '#description_display' => 'after',
       '#options' => ['' => t('Choose an operation')],
       '#prefix' => '<div id="operation-dropdown-replace">',
       '#suffix' => '</div>',

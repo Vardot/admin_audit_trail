@@ -119,6 +119,7 @@ class OverviewForm extends FormBase implements ContainerInjectionInterface {
       '#type' => 'details',
       '#title' => $this->t('Filters'),
       '#description' => $this->t('Filter the events.'),
+      '#description_display' => 'after',
       '#open' => $config->get('filter_expanded') ?? TRUE,
     ];
 
@@ -131,6 +132,7 @@ class OverviewForm extends FormBase implements ContainerInjectionInterface {
       '#type' => 'select',
       '#title' => $this->t('Type'),
       '#description' => $this->t('Event type'),
+      '#description_display' => 'after',
       '#options' => ['' => $this->t('Select a type')] + $options,
       '#ajax' => [
         'callback' => '::formGetAjaxOperation',
@@ -146,6 +148,7 @@ class OverviewForm extends FormBase implements ContainerInjectionInterface {
       '#selection_settings' => ['include_anonymous' => FALSE],
       '#title' => $this->t('User'),
       '#description' => $this->t('The user that triggered this event.'),
+      '#description_display' => 'after',
       '#size' => 30,
       '#maxlength' => 60,
     ];
@@ -155,6 +158,7 @@ class OverviewForm extends FormBase implements ContainerInjectionInterface {
       '#size' => 5,
       '#title' => $this->t('ID'),
       '#description' => $this->t('The id of the events (numeric).'),
+      '#description_display' => 'after',
     ];
 
     $form['filters']['ip'] = [
@@ -162,6 +166,7 @@ class OverviewForm extends FormBase implements ContainerInjectionInterface {
       '#size' => 20,
       '#title' => $this->t('IP'),
       '#description' => $this->t('The ip address of the visitor.'),
+      '#description_display' => 'after',
     ];
 
     $form['filters']['name'] = [
@@ -169,6 +174,7 @@ class OverviewForm extends FormBase implements ContainerInjectionInterface {
       '#size' => 10,
       '#title' => $this->t('Name'),
       '#description' => $this->t('The name or machine name.'),
+      '#description_display' => 'after',
     ];
 
     $form['filters']['path'] = [
@@ -176,6 +182,7 @@ class OverviewForm extends FormBase implements ContainerInjectionInterface {
       '#size' => 30,
       '#title' => $this->t('Path'),
       '#description' => $this->t('keyword in the path.'),
+      '#description_display' => 'after',
     ];
 
     $form['filters']['keyword'] = [
@@ -183,6 +190,7 @@ class OverviewForm extends FormBase implements ContainerInjectionInterface {
       '#size' => 10,
       '#title' => $this->t('Description'),
       '#description' => $this->t('Keyword in the description.'),
+      '#description_display' => 'after',
     ];
 
     $form['filters']['submit'] = [
