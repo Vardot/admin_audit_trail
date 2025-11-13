@@ -45,6 +45,7 @@
     "Entityqueue",
     "subqueue",
     "Subqueue",
+    "subqueues",
     "predelete",
     "Drush",
     "drush",

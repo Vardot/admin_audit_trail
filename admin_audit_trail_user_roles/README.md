@@ -17,7 +17,7 @@ Provides audit tracking for user role assignments, removals, and role management
 
 ## Requirements
 
-- Drupal 9, 10, or 11
+- Drupal
 - Admin Audit Trail module (admin_audit_trail)
 
 ## Installation

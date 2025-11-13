@@ -16,7 +16,7 @@ Provides audit tracking for paragraph creation, updates, and deletion operations
 
 ## Requirements
 
-* Drupal 9, 10, or 11
+* Drupal
 * Admin Audit Trail module (`admin_audit_trail`)
 * Paragraphs module (`paragraphs`)
 

@@ -15,7 +15,7 @@ Provides audit tracking for group creation, updates, and deletion operations, he
 
 ## Requirements
 
-* Drupal 9, 10, or 11
+* Drupal
 * Admin Audit Trail module (`admin_audit_trail`)
 * Group module (`group`)
 
