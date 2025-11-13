@@ -183,8 +183,28 @@ function admin_audit_trail_form_submit(&$form, FormStateInterface $form_state) {
  * Implements hook_form_alter().
  */
 function admin_audit_trail_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  // Add submit callback to ANY form action.
-  admin_audit_trail_add_submit_handler($form, 'admin_audit_trail_form_submit');
+  // Check if this form is relevant for audit logging before adding the handler.
+  $handlers = admin_audit_trail_get_event_handlers();
+  $is_relevant = FALSE;
+  foreach ($handlers as $type => $handler) {
+    if (!empty($handler['form_ids']) && in_array($form_id, $handler['form_ids'])) {
+      $is_relevant = TRUE;
+      break;
+    }
+    elseif (!empty($handler['form_ids_regexp'])) {
+      foreach ($handler['form_ids_regexp'] as $regexp) {
+        if (preg_match($regexp, $form_id)) {
+          $is_relevant = TRUE;
+          break 2;
+        }
+      }
+    }
+  }
+
+  if ($is_relevant) {
+    // Add submit callback only to relevant forms.
+    admin_audit_trail_add_submit_handler($form, 'admin_audit_trail_form_submit');
+  }
 }
 
 /**
