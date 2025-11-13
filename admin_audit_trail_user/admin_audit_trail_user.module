@@ -20,7 +20,7 @@ function admin_audit_trail_user_admin_audit_trail_handlers() {
 /**
  * Implements hook_user_insert().
  */
-function admin_audit_trail_user_insert($account) {
+function admin_audit_trail_user_user_insert($account) {
   $log = [
     'type' => 'user',
     'operation' => 'insert',
@@ -37,7 +37,7 @@ function admin_audit_trail_user_insert($account) {
 /**
  * Implements hook_user_update().
  */
-function admin_audit_trail_user_update($account) {
+function admin_audit_trail_user_user_update($account) {
   $log = [
     'type' => 'user',
     'operation' => 'update',
@@ -54,7 +54,7 @@ function admin_audit_trail_user_update($account) {
 /**
  * Implements hook_user_delete().
  */
-function admin_audit_trail_user_delete($account) {
+function admin_audit_trail_user_user_delete($account) {
   $log = [
     'type' => 'user',
     'operation' => 'delete',

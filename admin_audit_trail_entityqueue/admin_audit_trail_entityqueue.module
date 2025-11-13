@@ -27,7 +27,7 @@ function admin_audit_trail_entityqueue_admin_audit_trail_handlers() {
 /**
  * Implements hook_entity_queue_insert().
  */
-function admin_audit_trail_entity_queue_insert($entityqueue) {
+function admin_audit_trail_entityqueue_entity_queue_insert($entityqueue) {
   $entityQueue = EntityQueue::load($entityqueue->id());
   $title = $entityQueue->get('label');
   $log = [
@@ -81,7 +81,7 @@ function admin_audit_trail_entityqueue_entity_queue_predelete($entityqueue) {
 /**
  * Implements hook_entity_subqueue_insert().
  */
-function admin_audit_trail_entity_subqueue_insert($entity_subqueue) {
+function admin_audit_trail_entityqueue_entity_subqueue_insert($entity_subqueue) {
   $title = $entity_subqueue->get('title')->getValue()[0]['value'];
   $log = [
     'type' => 'entity_subqueue',

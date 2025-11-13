@@ -20,7 +20,7 @@ function admin_audit_trail_redirect_admin_audit_trail_handlers() {
 /**
  * Implements hook_redirect_insert().
  */
-function admin_audit_trail_redirect_insert($redirect) {
+function admin_audit_trail_redirect_redirect_insert($redirect) {
   $log = [
     'type' => 'redirect',
     'operation' => 'insert',
@@ -38,7 +38,7 @@ function admin_audit_trail_redirect_insert($redirect) {
 /**
  * Implements hook_redirect_update().
  */
-function admin_audit_trail_redirect_update($redirect) {
+function admin_audit_trail_redirect_redirect_update($redirect) {
   $log = [
     'type' => 'redirect',
     'operation' => 'update',
@@ -56,7 +56,7 @@ function admin_audit_trail_redirect_update($redirect) {
 /**
  * Implements hook_redirect_delete().
  */
-function admin_audit_trail_redirect_delete($redirect) {
+function admin_audit_trail_redirect_redirect_delete($redirect) {
   $log = [
     'type' => 'redirect',
     'operation' => 'delete',

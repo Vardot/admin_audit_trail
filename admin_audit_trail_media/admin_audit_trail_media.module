@@ -23,7 +23,7 @@ function admin_audit_trail_media_admin_audit_trail_handlers() {
 /**
  * Implements hook_ENTITY_TYPE_insert().
  */
-function admin_audit_trail_media_insert(Media $media) {
+function admin_audit_trail_media_media_insert(Media $media) {
   $log = [
     'type' => 'media',
     'operation' => 'insert',
@@ -43,7 +43,7 @@ function admin_audit_trail_media_insert(Media $media) {
 /**
  * Implements hook_ENTITY_TYPE_update().
  */
-function admin_audit_trail_media_update(Media $media) {
+function admin_audit_trail_media_media_update(Media $media) {
   $log = [
     'type' => 'media',
     'operation' => 'update',
@@ -63,7 +63,7 @@ function admin_audit_trail_media_update(Media $media) {
 /**
  * Implements hook_ENTITY_TYPE_delete().
  */
-function admin_audit_trail_media_delete(Media $media) {
+function admin_audit_trail_media_media_delete(Media $media) {
   $log = [
     'type' => 'media',
     'operation' => 'delete',

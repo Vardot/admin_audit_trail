@@ -20,7 +20,7 @@ function admin_audit_trail_node_admin_audit_trail_handlers() {
 /**
  * Implements hook_node_insert().
  */
-function admin_audit_trail_node_insert($node) {
+function admin_audit_trail_node_node_insert($node) {
   $log = [
     'type' => 'node',
     'operation' => 'insert',
@@ -37,7 +37,7 @@ function admin_audit_trail_node_insert($node) {
 /**
  * Implements hook_node_update().
  */
-function admin_audit_trail_node_update($node) {
+function admin_audit_trail_node_node_update($node) {
   $log = [
     'type' => 'node',
     'operation' => 'update',
@@ -54,7 +54,7 @@ function admin_audit_trail_node_update($node) {
 /**
  * Implements hook_node_delete().
  */
-function admin_audit_trail_node_delete($node) {
+function admin_audit_trail_node_node_delete($node) {
   $log = [
     'type' => 'node',
     'operation' => 'delete',
@@ -71,7 +71,7 @@ function admin_audit_trail_node_delete($node) {
 /**
  * Implements hook_entity_translation_insert().
  */
-function admin_audit_trail_node_translation_insert($node) {
+function admin_audit_trail_node_node_translation_insert($node) {
   $log = [
       'type' => 'node',
       'operation' => 'translation insert',
@@ -88,7 +88,7 @@ function admin_audit_trail_node_translation_insert($node) {
 /**
  * Implements hook_entity_translation_delete().
  */
-function admin_audit_trail_node_translation_delete($node) {
+function admin_audit_trail_node_node_translation_delete($node) {
   $log = [
       'type' => 'node',
       'operation' => 'translation delete',

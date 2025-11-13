@@ -20,7 +20,7 @@ function admin_audit_trail_comment_admin_audit_trail_handlers() {
 /**
  * Implements hook_comment_insert().
  */
-function admin_audit_trail_comment_insert($comment) {
+function admin_audit_trail_comment_comment_insert($comment) {
   $log = [
     'type' => 'comment',
     'operation' => 'insert',
@@ -37,7 +37,7 @@ function admin_audit_trail_comment_insert($comment) {
 /**
  * Implements hook_comment_update().
  */
-function admin_audit_trail_comment_update($comment) {
+function admin_audit_trail_comment_comment_update($comment) {
   $log = [
     'type' => 'comment',
     'operation' => 'update',
@@ -54,7 +54,7 @@ function admin_audit_trail_comment_update($comment) {
 /**
  * Implements hook_comment_delete().
  */
-function admin_audit_trail_comment_delete($comment) {
+function admin_audit_trail_comment_comment_delete($comment) {
   $log = [
     'type' => 'comment',
     'operation' => 'delete',

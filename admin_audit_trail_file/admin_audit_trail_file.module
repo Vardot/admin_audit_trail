@@ -23,7 +23,7 @@ function admin_audit_trail_file_admin_audit_trail_handlers() {
 /**
  * Implements hook_ENTITY_TYPE_insert().
  */
-function admin_audit_trail_file_insert(File $file) {
+function admin_audit_trail_file_file_insert(File $file) {
   $log = [
     'type' => 'file',
     'operation' => 'insert',
@@ -39,7 +39,7 @@ function admin_audit_trail_file_insert(File $file) {
 /**
  * Implements hook_ENTITY_TYPE_update().
  */
-function admin_audit_trail_file_update(File $file) {
+function admin_audit_trail_file_file_update(File $file) {
   $log = [
     'type' => 'file',
     'operation' => 'update',
@@ -55,7 +55,7 @@ function admin_audit_trail_file_update(File $file) {
 /**
  * Implements hook_ENTITY_TYPE_delete().
  */
-function admin_audit_trail_file_delete(File $file) {
+function admin_audit_trail_file_file_delete(File $file) {
   $log = [
     'type' => 'file',
     'operation' => 'delete',
