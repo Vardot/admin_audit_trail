@@ -13,6 +13,7 @@ use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**
  * Configure user settings for this site.
@@ -34,19 +35,30 @@ class OverviewForm extends FormBase implements ContainerInjectionInterface {
   protected $entityTypeManager;
 
   /**
+   * The config factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
    * Overview form construct.
    *
    * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
    *   The request stack object.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The configuration factory.
    */
   public function __construct(
     RequestStack $request_stack,
-    EntityTypeManagerInterface $entity_type_manager
+    EntityTypeManagerInterface $entity_type_manager,
+    ConfigFactoryInterface $config_factory
   ) {
     $this->requestStack = $request_stack;
     $this->entityTypeManager = $entity_type_manager;
+    $this->configFactory = $config_factory;
   }
 
   /**
@@ -55,7 +67,8 @@ class OverviewForm extends FormBase implements ContainerInjectionInterface {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('request_stack'),
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('config.factory')
     );
   }
 
@@ -100,11 +113,13 @@ class OverviewForm extends FormBase implements ContainerInjectionInterface {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    $config = $this->configFactory->get('admin_audit_trail.settings');
+
     $form['filters'] = [
       '#type' => 'details',
       '#title' => $this->t('Filters'),
       '#description' => $this->t('Filter the events.'),
-      '#open' => TRUE,
+      '#open' => $config->get('filter_expanded') ?? TRUE,
     ];
 
     $handlers = admin_audit_trail_get_event_handlers();

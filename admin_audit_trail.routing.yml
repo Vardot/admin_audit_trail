@@ -5,3 +5,10 @@ admin_audit_trail.report_form:
     _title: "Admin audit trails"
   requirements:
     _permission: "access admin audit trail"
+admin_audit_trail.settings:
+  path: '/admin/config/development/audit-trail/settings'
+  defaults:
+    _form: '\Drupal\admin_audit_trail\Form\SettingsForm'
+    _title: 'Admin audit trails Settings'
+  requirements:
+    _permission: 'configure admin audit trail'

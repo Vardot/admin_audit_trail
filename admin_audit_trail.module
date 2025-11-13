@@ -220,3 +220,32 @@ function admin_audit_trail_safe_truncate($value, $max_length = 255) {
     ? substr($value, 0, $max_length - 3) . '...'
     : $value;
 }
+
+/**
+ * Implements hook_cron().
+ *
+ * Controls the size of the audit trail log table, paring it to 'admin_audit_trail_row_limit' messages.
+ */
+function admin_audit_trail_cron() {
+  // Cleanup the watchdog table.
+  $row_limit = \Drupal::config('admin_audit_trail.settings')->get('admin_audit_trail_row_limit');
+
+  // For row limit n, get the wid of the nth row in descending wid order.
+  // Counting the most recent n rows avoids issues with wid number sequences,
+  // e.g. auto_increment value > 1 or rows deleted directly from the table.
+  if ($row_limit > 0) {
+    $connection = \Drupal::database();
+    $min_row = $connection->select('admin_audit_trail', 'lid')
+      ->fields('lid', ['lid'])
+      ->orderBy('lid', 'DESC')
+      ->range($row_limit - 1, 1)
+      ->execute()->fetchField();
+
+    // Delete all table entries older than the nth row, if nth row was found.
+    if ($min_row) {
+      $connection->delete('admin_audit_trail')
+        ->condition('lid', $min_row, '<')
+        ->execute();
+    }
+  }
+}

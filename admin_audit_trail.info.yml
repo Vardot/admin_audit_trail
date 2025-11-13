@@ -3,4 +3,4 @@ description: "Logs general CUD events performed by the user (using the forms) on
 type: module
 core_version_requirement: ^8 || ^9 || ^10 || ^11
 package: Administration
-configure: admin_audit_trail.report_form
+configure: admin_audit_trail.settings

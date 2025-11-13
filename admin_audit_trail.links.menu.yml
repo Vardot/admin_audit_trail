@@ -4,3 +4,9 @@ admin_audit_trail.report_form:
   description: "Get report about cud operation performed by the user on the website."
   weight: -5
   route_name: admin_audit_trail.report_form
+admin_audit_trail.settings:
+  title: "Admin audit trail settings"
+  parent: system.admin_config_development
+  description: "Configure admin audit trail settings."
+  weight: -5
+  route_name: admin_audit_trail.settings
