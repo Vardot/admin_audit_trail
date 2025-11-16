@@ -5,6 +5,7 @@ include:
       - "/includes/include.drupalci.main.yml"
       - "/includes/include.drupalci.variables.yml"
       - "/includes/include.drupalci.workflows.yml"
+      - "/includes/include.pages.yml"
 composer-lint:
   allow_failure: true
 cspell:
