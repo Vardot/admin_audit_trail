@@ -1,5 +1,7 @@
 # Admin Audit Trail
 
+![Admin Audit Trail](docs/images/logo.png)
+
 A comprehensive Drupal audit logging module that tracks and records all content management and administrative actions within your website. This module logs specific events that you want to review and maintain for compliance, accountability, and security purposes.
 
 ## Overview
