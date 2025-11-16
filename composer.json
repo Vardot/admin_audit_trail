@@ -4,7 +4,6 @@
   "type": "drupal-module",
   "homepage": "https://www.drupal.org/project/admin_audit_trail",
   "license": "GPL-2.0-or-later",
-  "minimum-stability": "dev",
   "authors": [
     {
       "name": "Vardot",
@@ -16,13 +15,7 @@
     "issues": "https://www.drupal.org/project/issues/admin_audit_trail",
     "source": "http://cgit.drupalcode.org/admin_audit_trail"
   },
-  "repositories": {
-    "drupal": {
-      "type": "composer",
-      "url": "https://packages.drupal.org/8"
-    }
-  },
   "require": {
-    "drupal/core": "^8 || ^9 || ^10 || ^11"
+    "drupal/core": "^10 || ^11"
   }
 }
