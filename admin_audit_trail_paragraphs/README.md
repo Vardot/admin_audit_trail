@@ -1,6 +1,6 @@
-# Admin Audit Trail Paragraph
+# Admin Audit Trail Paragraphs
 
-Admin Audit Trail Paragraph is a Drupal module that extends the Admin Audit Trail module by logging all paragraph-related activities.
+Admin Audit Trail Paragraphs is a Drupal module that extends the Admin Audit Trail module by logging all paragraph-related activities.
 
 Provides audit tracking for paragraph creation, updates, and deletion operations, helping administrators maintain detailed records of paragraph management changes.
 
@@ -27,7 +27,7 @@ Provides audit tracking for paragraph creation, updates, and deletion operations
 2. Enable the module via the Drupal admin interface or using Drush:
 
 ```bash
-drush en admin_audit_trail_paragraph
+drush en admin_audit_trail_paragraphs
 ```
 
 3. Ensure the Admin Audit Trail and Paragraphs modules are enabled

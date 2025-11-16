@@ -8,11 +8,11 @@
 /**
  * Implements hook_admin_audit_trail_handlers().
  */
-function admin_audit_trail_paragraph_admin_audit_trail_handlers() {
-  // Paragraph event log handler.
+function admin_audit_trail_paragraphs_admin_audit_trail_handlers() {
+  // Paragraphs event log handler.
   $handlers = [];
   $handlers['paragraph'] = [
-    'title' => t('Paragraph'),
+    'title' => t('Paragraphs'),
   ];
   return $handlers;
 }
@@ -20,7 +20,7 @@ function admin_audit_trail_paragraph_admin_audit_trail_handlers() {
 /**
  * Implements hook_paragraph_insert().
  */
-function admin_audit_trail_paragraph_paragraph_insert($paragraph) {
+function admin_audit_trail_paragraphs_paragraph_insert($paragraph) {
   $log = [
     'type' => 'paragraph',
     'operation' => 'insert',
@@ -37,7 +37,7 @@ function admin_audit_trail_paragraph_paragraph_insert($paragraph) {
 /**
  * Implements hook_paragraph_update().
  */
-function admin_audit_trail_paragraph_paragraph_update($paragraph) {
+function admin_audit_trail_paragraphs_paragraph_update($paragraph) {
   $log = [
     'type' => 'paragraph',
     'operation' => 'update',
@@ -54,7 +54,7 @@ function admin_audit_trail_paragraph_paragraph_update($paragraph) {
 /**
  * Implements hook_paragraph_delete().
  */
-function admin_audit_trail_paragraph_paragraph_delete($paragraph) {
+function admin_audit_trail_paragraphs_paragraph_delete($paragraph) {
   $log = [
     'type' => 'paragraph',
     'operation' => 'delete',

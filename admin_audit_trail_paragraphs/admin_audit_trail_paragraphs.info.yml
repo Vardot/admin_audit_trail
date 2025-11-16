@@ -1,7 +1,8 @@
-name: "Admin Audit Trail Paragraph"
-description: "Logs paragraph CUD events performed by the user."
+name: "Admin Audit Trail Paragraphs"
+description: "Logs paragraph entity CUD events performed by the user."
 type: module
 core_version_requirement: ^9 || ^10 || ^11
 package: Administration
 dependencies:
   - admin_audit_trail:admin_audit_trail
+  - paragraphs:paragraphs
