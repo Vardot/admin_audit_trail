@@ -5,16 +5,32 @@ include:
       - "/includes/include.drupalci.main.yml"
       - "/includes/include.drupalci.variables.yml"
       - "/includes/include.drupalci.workflows.yml"
-      - "/includes/include.pages.yml"
+
+.prettier-lint-base:
+  stage: validate
+  script:
+    - echo "Prettier version $(${CI_PROJECT_DIR}/${_WEB_ROOT}/core/node_modules/.bin/prettier --version)"
+    - ${CI_PROJECT_DIR}/${_WEB_ROOT}/core/node_modules/.bin/prettier --check ${CI_PROJECT_DIR}/docs/
+  rules:
+    - changes:
+        - "docs/*.md"
+        - "docs/**/*.md"
+  allow_failure: true
+  artifacts:
+    expose_as: prettier-lint
+    when: always
+    expire_in: 6 mos
+    reports:
+      codequality: prettier-lint-quality-report.xml
+    name: artifacts-$CI_PIPELINE_ID-$CI_JOB_NAME_SLUG
+    paths:
+      - prettier-lint-quality-report.xml
+
+prettier-lint:
+  extends: .prettier-lint-base
 composer-lint:
   allow_failure: true
 cspell:
-  stage: validate
-  image: node:18
-  before_script:
-    - npm install -g cspell
-  script:
-    - cspell "**/*.{php,module,inc,install,test,profile,theme,js,css,md,yml,txt}" --no-progress || true
   allow_failure: true
 eslint:
   allow_failure: true
@@ -24,3 +40,5 @@ phpstan:
   allow_failure: true
 phpunit:
   allow_failure: true
+  variables:
+    _PHPUNIT_EXTRA: ''
