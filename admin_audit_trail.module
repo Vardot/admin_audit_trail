@@ -133,6 +133,22 @@ function admin_audit_trail_get_event_handlers() {
 }
 
 /**
+ * Returns all registered event types for Views filters.
+ *
+ * @return array
+ *   An associative array of event types keyed by machine name with labels.
+ */
+function admin_audit_trail_get_event_types() {
+  $types = [];
+  $handlers = admin_audit_trail_get_event_handlers();
+  foreach ($handlers as $type => $handler) {
+    $types[$type] = !empty($handler['title']) ? $handler['title'] : ucfirst($type);
+  }
+  asort($types);
+  return $types;
+}
+
+/**
  * Form submission callback.
  */
 function admin_audit_trail_form_submit(&$form, FormStateInterface $form_state) {

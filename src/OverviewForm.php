@@ -115,6 +115,20 @@ class OverviewForm extends FormBase implements ContainerInjectionInterface {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->configFactory->get('admin_audit_trail.settings');
 
+    // Add deprecation notice.
+    $form['deprecation_notice'] = [
+      '#type' => 'container',
+      '#attributes' => [
+        'class' => ['messages', 'messages--warning'],
+      ],
+      '#weight' => -100,
+      'message' => [
+        '#markup' => $this->t('<strong>Deprecated:</strong> This form-based report is deprecated and will be removed in a future version. Please use the <a href="@views_url">Views-based Admin Audit Trail report</a> instead.', [
+          '@views_url' => '/admin/reports/audit-trail',
+        ]),
+      ],
+    ];
+
     $form['filters'] = [
       '#type' => 'details',
       '#title' => $this->t('Filters'),
