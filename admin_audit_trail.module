@@ -9,6 +9,7 @@ use Drupal\Core\Render\Element;
 use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Cache\Cache;
 
 /**
  * Implements hook_help().
@@ -115,6 +116,7 @@ function admin_audit_trail_insert(array &$log) {
       ->fields($fields)
       ->execute();
   }
+  Cache::invalidateTags(['config:views.view.admin_audit_trail']);
 }
 
 /**
