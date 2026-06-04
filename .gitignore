@@ -4,3 +4,21 @@ node_modules
 
 # Ignore yarn
 .yarn/
+yarn-error.log
+
+# Playwright MCP scratch output
+.playwright-mcp/
+
+# gitlab-ci-local runner state + job artifacts
+.gitlab-ci-local/
+/public/
+
+# webship-js generated artefacts (keep the tracked READMEs / structure)
+tests/reports/**/*.json
+tests/reports/**/*.html
+tests/reports/**/*.pdf
+tests/reports/**/*.xml
+tests/screenshots/**/*.png
+tests/screenshots/**/*.jpeg
+tests/videos/**/*.webm
+.cucumber.js.bak

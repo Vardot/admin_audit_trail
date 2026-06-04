@@ -1,3 +1,19 @@
+################################################################################
+# GitLab CI for the Admin Audit Trail module.
+#
+# Two halves:
+#   1. The standard Drupal CI validation jobs (composer-lint, cspell, eslint,
+#      phpcs, phpstan, phpunit) provided by the drupalci templates.
+#   2. A webship-js BDD browser-test job (Playwright + Cucumber-js) that runs
+#      the `tests/features/drupal/**` suite against a freshly installed
+#      Drupal Standard site with the module + its handler submodules enabled.
+#
+# The webship-js suite drives the site entirely through the browser. The first
+# feature (01-01-01-users-login) logs in as the Webmaster and provisions the
+# per-role testing users, so the before_script only has to build the site,
+# enable the modules and install Node + Playwright.
+################################################################################
+
 include:
   - project: $_GITLAB_TEMPLATES_REPO
     ref: $_GITLAB_TEMPLATES_REF
@@ -5,17 +21,120 @@ include:
       - "/includes/include.drupalci.main.yml"
       - "/includes/include.drupalci.variables.yml"
       - "/includes/include.drupalci.workflows.yml"
+
+variables:
+  COMPOSER_FLAGS: "--no-strict-lock"
+  COMPOSER_MEMORY_LIMIT: "-1"
+  # No yarn.lock is committed; Yarn 4 defaults to immutable installs and would
+  # refuse to create one. Allow lockfile creation in CI for every job.
+  YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
+
+# = Validate stage (drupalci defaults; all blocking) =
 composer-lint:
-  allow_failure: true
+  allow_failure: false
 cspell:
-  allow_failure: true
+  allow_failure: false
 eslint:
-  allow_failure: true
+  allow_failure: false
 phpcs:
-  allow_failure: true
+  allow_failure: false
 phpstan:
-  allow_failure: true
+  allow_failure: false
 phpunit:
-  allow_failure: true
+  allow_failure: false
   variables:
     _PHPUNIT_EXTRA: ''
+
+# = Reusable before_script fragments (via !reference) =
+.fragments:
+  web_db: &web_db
+    - mkdir -pv $CI_PROJECT_DIR/$_WEB_ROOT/sites/default/files
+    - mkdir -pv $CI_PROJECT_DIR/$_WEB_ROOT/sites/simpletest
+    - chmod -R 777 $CI_PROJECT_DIR/$_WEB_ROOT/sites/default/files
+    - chmod -R 777 $CI_PROJECT_DIR/$_WEB_ROOT/sites/simpletest
+    - rm -rf /var/www/html && ln -s $CI_PROJECT_DIR/$_WEB_ROOT /var/www/html
+    - chown -R www-data:www-data $CI_PROJECT_DIR
+    - service apache2 start
+    - export SIMPLETEST_DB=mysql://$MYSQL_USER:$MYSQL_PASSWORD@database/$MYSQL_DATABASE
+  node_playwright: &node_playwright
+
+    - curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+    - apt-get install -y nodejs
+    - node --version && npm --version
+    - 'test -f .yarnrc.yml || echo "nodeLinker: node-modules" > .yarnrc.yml'
+    # Back up cucumber.js - webship-js's postinstall can clobber it under yarn 4.
+    - cp cucumber.js .cucumber.js.bak
+    - corepack enable
+    - yarn install
+    - cp .cucumber.js.bak cucumber.js && rm .cucumber.js.bak
+    - ./node_modules/.bin/playwright install --with-deps chromium
+
+# = webship-js BDD - Drupal Standard profile =
+webship-js-test:
+  extends: .testing-job-base
+  needs: [composer]
+  # Override the parent's services - we only need the database. Playwright
+  # bundles its own Chromium, so Selenium and chromedriver are not needed.
+  services:
+    - name: $_CONFIG_DOCKERHUB_ROOT/$_TARGET_DB_TYPE-$_TARGET_DB_VERSION:$_TARGET_DB_IMAGE_TAG
+      alias: database
+  variables:
+    DRUPAL_ADMIN_USERNAME: "webmaster"
+    DRUPAL_ADMIN_PASSWORD: "dD.123123ddd"
+    DRUPAL_TEST_BASE_URL: "http://localhost"
+    LAUNCH_URL: "http://localhost"
+    FORCE_COLOR: "1"
+  artifacts:
+    when: always
+    paths:
+      - tests/reports/
+      - tests/screenshots/
+      - tests/videos/
+    expire_in: 7 days
+    reports:
+      junit: tests/reports/junit.xml
+  before_script:
+    - !reference [.fragments, web_db]
+    - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT site:install standard
+        --db-url=$SIMPLETEST_DB --account-name=webmaster --account-pass=dD.123123ddd
+        --site-name="Admin Audit Trail Test" -y
+    # Core modules the event scenarios drive through the UI.
+    - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT en -y
+        media media_library workflows content_moderation field_ui
+        redirect entityqueue paragraphs group
+    # Enable the module plus EVERY handler submodule so all event types are
+    # recorded for the per-submodule scenarios to assert.
+    - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT en -y
+        admin_audit_trail
+        admin_audit_trail_auth
+        admin_audit_trail_block_content
+        admin_audit_trail_comment
+        admin_audit_trail_entityqueue
+        admin_audit_trail_file
+        admin_audit_trail_group
+        admin_audit_trail_media
+        admin_audit_trail_menu
+        admin_audit_trail_node
+        admin_audit_trail_paragraphs
+        admin_audit_trail_redirect
+        admin_audit_trail_taxonomy
+        admin_audit_trail_user
+        admin_audit_trail_user_roles
+        admin_audit_trail_workflows
+    # Provision the fixtures each submodule scenario needs (image media type,
+    # Editorial workflow on article, a group type, a paragraph type + field).
+    - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT scr $CI_PROJECT_DIR/tests/fixtures/provision-fixtures.php
+    - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT cache:rebuild
+    - !reference [.fragments, node_playwright]
+  script:
+    # cucumber.js loads only `tests/features/drupal/**`. Disable webship-js's
+    # auto HTML hook (it cannot await PDF generation from `process.on('exit')`)
+    # and run `generate-reports` explicitly after cucumber-js so both HTML and
+    # PDF land next to the JSON in `tests/reports/drupal/`.
+    - WEBSHIP_REPORT_DISABLE=1 ./node_modules/.bin/cucumber-js --config cucumber.js --tags "not @wip"
+    - node ./node_modules/webship-js/bin/generate-reports.js
+        --json tests/reports/drupal/cucumber_report.json
+        --out  tests/reports/drupal/cucumber_report.html
+        --format all
+        --pdf-out tests/reports/drupal/cucumber_report.pdf
+  allow_failure: false

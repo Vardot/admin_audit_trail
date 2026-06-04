@@ -5,6 +5,7 @@
  * Track the logs of form submissions or other actions that performed by user.
  */
 
+use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
@@ -249,14 +250,22 @@ function admin_audit_trail_add_submit_handler(array &$element, $callback) {
 
 /**
  * Truncate a string to a safe DB length.
+ *
+ * Counts and cuts by characters (not bytes) so multibyte UTF-8 text - e.g.
+ * Arabic node titles or usernames - is never split mid-sequence, which would
+ * otherwise corrupt the stored value and the rendered report. The reference
+ * columns are varchar(255), i.e. 255 characters under utf8mb4.
  */
 function admin_audit_trail_safe_truncate($value, $max_length = 255) {
   if (!is_string($value)) {
     return '';
   }
-  return strlen($value) > $max_length
-    ? substr($value, 0, $max_length - 3) . '...'
-    : $value;
+  if (mb_strlen($value) <= $max_length) {
+    return $value;
+  }
+  // Unicode::truncate() trims to whole characters and appends the ellipsis
+  // without ever exceeding $max_length characters.
+  return Unicode::truncate($value, $max_length, FALSE, TRUE);
 }
 
 /**

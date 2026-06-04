@@ -18,6 +18,7 @@
     "admin",
     "anonymization",
     "Anonymization",
+    "asort",
     "audit",
     "Blackfire",
     "CCPA",
@@ -43,6 +44,7 @@
     "MEDIUMTEXT",
     "metatag",
     "microtime",
+    "multibyte",
     "multisite",
     "mysqld",
     "Natshah",
@@ -72,6 +74,7 @@
     "subqueues",
     "Symfony",
     "trail",
+    "ucfirst",
     "UNIXTIME",
     "updatedb",
     "vardot",
@@ -80,6 +83,8 @@
     "webform",
     "Webform",
     "webforms",
+    "webship",
+    "Webship",
     "yoast"
   ]
 }

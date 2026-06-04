@@ -17,5 +17,17 @@
   },
   "require": {
     "drupal/core": "^10 || ^11"
+  },
+  "require-dev": {
+    "drupal/entityqueue": "^1.7",
+    "drupal/group": "^3.3",
+    "drupal/paragraphs": "^1.19",
+    "drupal/redirect": "^1.11"
+  },
+  "suggest": {
+    "drupal/entityqueue": "Enable admin_audit_trail_entityqueue to log entity queue and subqueue events.",
+    "drupal/group": "Enable admin_audit_trail_group to log group events.",
+    "drupal/paragraphs": "Enable admin_audit_trail_paragraphs to log paragraph events.",
+    "drupal/redirect": "Enable admin_audit_trail_redirect to log URL redirect events."
   }
 }
