@@ -497,6 +497,53 @@ Description: Updated paragraph "Hero Banner" - Changed background image
 
 ---
 
+## Configuration
+
+### Admin Audit Trail Config
+
+**Machine name**: `admin_audit_trail_config`
+
+**Purpose**: Tracks Drupal configuration changes
+
+**What it logs**:
+- ✓ Configuration creation (first save of a config object)
+- ✓ Configuration updates
+- ✓ Configuration deletion
+
+Covers simple configuration (e.g. `system.site`) and configuration entities
+(content types, fields, views, vocabularies, menus, image styles, etc.).
+Because configuration is not saved through entity CUD hooks, this sub-module
+listens to the configuration system's `ConfigEvents::SAVE` and
+`ConfigEvents::DELETE` events instead.
+
+**When to enable**:
+- Change management for site settings and structure
+- Accountability for who changed which configuration
+- Incident investigation (diagnose a regression after a config change)
+- Compliance requiring configuration change history
+
+**Dependencies**: None
+
+**Log examples**:
+```
+Operation: insert
+Description: Config: taxonomy.vocabulary.tags
+
+Operation: update
+Description: Config: system.site
+
+Operation: delete
+Description: Config: taxonomy.vocabulary.tags
+```
+
+**Performance impact**: Low to Medium (config imports save many objects at once)
+
+**Note**: As with all sub-modules, only changes made through a web request are
+recorded; configuration written from the command line (Drush, cron) is not
+logged.
+
+---
+
 ## Sub-module Selection Guide
 
 ### By Site Type
@@ -589,6 +636,7 @@ Description: Updated paragraph "Hero Banner" - Changed background image
 | Entityqueue | Low | Low | Minimal |
 | Paragraphs | High | High | Medium-High |
 | Group | Low-Medium | Low-Medium | Low-Medium |
+| Config | Low-Medium | Low-Medium | Low-Medium |
 
 ## Enabling Multiple Sub-modules
 
@@ -614,7 +662,7 @@ drush en admin_audit_trail_menu admin_audit_trail_taxonomy admin_audit_trail_red
 drush en admin_audit_trail_auth admin_audit_trail_user admin_audit_trail_user_roles \
   admin_audit_trail_node admin_audit_trail_comment admin_audit_trail_block_content \
   admin_audit_trail_media admin_audit_trail_file admin_audit_trail_menu \
-  admin_audit_trail_taxonomy admin_audit_trail_workflows -y
+  admin_audit_trail_taxonomy admin_audit_trail_workflows admin_audit_trail_config -y
 ```
 
 ### Via UI

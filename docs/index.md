@@ -72,6 +72,9 @@ Admin Audit Trail includes specialized sub-modules for tracking different types 
 - **Admin Audit Trail Paragraphs** - Paragraph entity operations
 - **Admin Audit Trail Group** - Group entity operations
 
+### Configuration
+- **Admin Audit Trail Config** - Configuration create, update and delete operations
+
 ## Quick Links
 
 - [FAQ](faq.md) - Frequently asked questions

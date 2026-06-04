@@ -1,0 +1,17 @@
+<?php
+
+/**
+ * @file
+ * Logs config CUD commands in the admin_audit_trail module.
+ */
+
+/**
+ * Implements hook_admin_audit_trail_handlers().
+ */
+function admin_audit_trail_config_admin_audit_trail_handlers() {
+  $handlers = [];
+  $handlers['config'] = [
+    'title' => t('Configuration'),
+  ];
+  return $handlers;
+}

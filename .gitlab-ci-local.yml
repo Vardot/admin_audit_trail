@@ -117,7 +117,7 @@ webship-js-test:
     # --- Install + enable + provide test fixtures --------------------------
     - vendor/bin/drush site:install standard --db-url="$DB_URL" --account-name=webmaster --account-pass=dD.123123ddd --site-name="Admin Audit Trail Test" -y
     - vendor/bin/drush en -y media media_library workflows content_moderation field_ui redirect entityqueue paragraphs group
-    - vendor/bin/drush en -y admin_audit_trail admin_audit_trail_auth admin_audit_trail_block_content admin_audit_trail_comment admin_audit_trail_entityqueue admin_audit_trail_file admin_audit_trail_group admin_audit_trail_media admin_audit_trail_menu admin_audit_trail_node admin_audit_trail_paragraphs admin_audit_trail_redirect admin_audit_trail_taxonomy admin_audit_trail_user admin_audit_trail_user_roles admin_audit_trail_workflows
+    - vendor/bin/drush en -y admin_audit_trail admin_audit_trail_auth admin_audit_trail_block_content admin_audit_trail_comment admin_audit_trail_config admin_audit_trail_entityqueue admin_audit_trail_file admin_audit_trail_group admin_audit_trail_media admin_audit_trail_menu admin_audit_trail_node admin_audit_trail_paragraphs admin_audit_trail_redirect admin_audit_trail_taxonomy admin_audit_trail_user admin_audit_trail_user_roles admin_audit_trail_workflows
     # drush scr resolves the path relative to cwd, so run it from inside $SITE.
     - cp "$CI_PROJECT_DIR/tests/fixtures/provision-fixtures.php" "$SITE/provision-fixtures.php"
     - vendor/bin/drush scr provision-fixtures.php

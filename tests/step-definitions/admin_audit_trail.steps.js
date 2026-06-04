@@ -491,7 +491,29 @@ When(/^(?:I |we )?create a taxonomy vocabulary named "([^"]*)"$/, async function
     }, [label, id]);
     await this.page.evaluate(() => document.querySelector('#edit-submit').click());
     await waitForPageLoad(this.page, this.minWaitTime && this.minWaitTime.page);
+    // Remember the created vocabulary so a later step can delete it.
+    this.createdVocabularyId = id;
   }, `Could not create the vocabulary "${label}"`);
+});
+
+/**
+ * Delete the taxonomy vocabulary created earlier in the scenario.
+ *
+ * Example #1: When I delete the taxonomy vocabulary I created
+ * Example #2: And we delete the taxonomy vocabulary I created
+ */
+When(/^(?:I |we )?delete the taxonomy vocabulary I created$/, async function () {
+  await attempt(async () => {
+    if (!this.createdVocabularyId) {
+      throw new Error('No taxonomy vocabulary has been created yet in this scenario.');
+    }
+    await gotoUrl(this.page, `${this.parameters.launchUrl}/admin/structure/taxonomy/manage/${this.createdVocabularyId}/delete`);
+    await this.page.evaluate(() => {
+      const btn = document.querySelector('input[name="op"][value="Delete"]') || document.querySelector('#edit-submit');
+      if (btn) btn.click();
+    });
+    await waitForPageLoad(this.page, this.minWaitTime && this.minWaitTime.page);
+  }, 'Could not delete the taxonomy vocabulary');
 });
 
 When(/^(?:I |we )?create a taxonomy term named "([^"]*)"$/, async function (term) {

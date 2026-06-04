@@ -1,0 +1,7 @@
+name: 'Admin Audit Trail Config'
+type: module
+description: 'Logs configuration CUD events performed by the user.'
+package: Administration
+core_version_requirement: ^10 || ^11
+dependencies:
+  - admin_audit_trail:admin_audit_trail

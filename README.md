@@ -41,6 +41,9 @@ The Admin Audit Trail module includes comprehensive tracking through specialized
 - **Admin Audit Trail Paragraph** - Logs paragraph entity creation, updates, and deletion
 - **Admin Audit Trail Group** - Logs group entity creation, updates, and deletion (requires Group module)
 
+### Configuration
+- **Admin Audit Trail Config** - Logs configuration object creation, updates, and deletion (e.g. site settings, content types, fields, views, vocabularies, menus)
+
 ## Key Features
 
 * **Comprehensive Logging**: Tracks both entity operations (insert, update, delete) and user actions (login, logout, form submissions)
@@ -240,6 +243,7 @@ Each sub-module handles a specific entity type:
    - **Admin Audit Trail User** - Track user account management
    - **Admin Audit Trail Node** - Track content (nodes)
    - **Admin Audit Trail Comment** - Track comments
+   - **Admin Audit Trail Config** - Track configuration changes
    - And more...
 4. Click "Install" or save the modules page
 5. Clear the cache

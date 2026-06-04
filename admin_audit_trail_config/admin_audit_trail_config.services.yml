@@ -1,0 +1,5 @@
+services:
+  admin_audit_trail_config.config_event_subscriber:
+    class: Drupal\admin_audit_trail_config\EventSubscriber\ConfigEventSubscriber
+    tags:
+      - { name: event_subscriber }

@@ -109,6 +109,7 @@ webship-js-test:
         admin_audit_trail_auth
         admin_audit_trail_block_content
         admin_audit_trail_comment
+        admin_audit_trail_config
         admin_audit_trail_entityqueue
         admin_audit_trail_file
         admin_audit_trail_group
