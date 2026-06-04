@@ -86,8 +86,8 @@ class OverviewForm extends FormBase implements ContainerInjectionInterface {
    * @param int $uid
    *   The user ID.
    *
-   * @return \Drupal\Core\Link
-   *   The internal link for the user.
+   * @return \Drupal\Core\Link|\Drupal\Component\Render\MarkupInterface|string
+   *   The internal link for the user, or markup for anonymous / deleted users.
    */
   private function getUserData($uid) {
     if (empty($uid)) {

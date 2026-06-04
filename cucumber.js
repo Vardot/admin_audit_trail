@@ -6,7 +6,8 @@
 //   npx cucumber-js --config cucumber.js
 //
 // Reusable step definitions ship with webship-js; the module-specific steps
-// live in tests/step-definitions/admin_audit_trail.steps.js.
+// live in tests/step-definitions/admin_audit_trail.steps.js. Artefacts land
+// directly under tests/reports, tests/screenshots and tests/videos.
 
 const baseWorldParameters = require('./cucumber.shared.js');
 
@@ -21,15 +22,8 @@ module.exports = {
     paths: ['tests/features/drupal/**/*.feature'],
     format: [
       '@cucumber/pretty-formatter',
-      'json:tests/reports/drupal/cucumber_report.json',
+      'json:tests/reports/cucumber_report.json',
     ],
-    worldParameters: Object.assign({}, baseWorldParameters, {
-      screenshot: Object.assign({}, baseWorldParameters.screenshot, {
-        dir: './tests/screenshots/drupal',
-      }),
-      video: Object.assign({}, baseWorldParameters.video, {
-        dir: './tests/videos/drupal',
-      }),
-    }),
+    worldParameters: baseWorldParameters,
   },
 };

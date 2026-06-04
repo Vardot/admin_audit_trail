@@ -29,7 +29,7 @@ variables:
   # refuse to create one. Allow lockfile creation in CI for every job.
   YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
 
-# = Validate stage (drupalci defaults; all blocking) =
+# = Validate stage (all blocking) =
 composer-lint:
   allow_failure: false
 cspell:
@@ -130,11 +130,11 @@ webship-js-test:
     # cucumber.js loads only `tests/features/drupal/**`. Disable webship-js's
     # auto HTML hook (it cannot await PDF generation from `process.on('exit')`)
     # and run `generate-reports` explicitly after cucumber-js so both HTML and
-    # PDF land next to the JSON in `tests/reports/drupal/`.
+    # PDF land next to the JSON in `tests/reports/`.
     - WEBSHIP_REPORT_DISABLE=1 ./node_modules/.bin/cucumber-js --config cucumber.js --tags "not @wip"
     - node ./node_modules/webship-js/bin/generate-reports.js
-        --json tests/reports/drupal/cucumber_report.json
-        --out  tests/reports/drupal/cucumber_report.html
+        --json tests/reports/cucumber_report.json
+        --out  tests/reports/cucumber_report.html
         --format all
-        --pdf-out tests/reports/drupal/cucumber_report.pdf
+        --pdf-out tests/reports/cucumber_report.pdf
   allow_failure: false

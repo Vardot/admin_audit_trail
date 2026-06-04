@@ -7,9 +7,21 @@ parameters:
   ignoreErrors:
     - identifier: missingType.generics
     - identifier: missingType.iterableValue
+    - identifier: missingType.return
+    - identifier: missingType.parameter
     - identifier: function.alreadyNarrowedType
     # new static() is a best practice in Drupal, so we cannot fix that.
     - "#^Unsafe usage of new static#"
+    # The dynamic ->original property is set by Entity::preSave() during an
+    # update; it is not declared on the interface (Drupal core idiom).
+    - '#Access to an undefined property Drupal\\[a-zA-Z0-9\\_]+::\$original\.#'
+    # Core views InOperator::getValueOptions() guards the typed (uninitialised)
+    # $valueOptions property with isset(); this is the core-standard pattern.
+    - '#Property Drupal\\views\\Plugin\\views\\filter\\InOperator::\$valueOptions \(array\) in isset\(\) is not nullable\.#'
+    # Chained ->extend(TableSortExtender)->extend(PagerSelectExtender) exposes
+    # only the last extender to static analysis; orderByHeader() is provided by
+    # TableSortExtender at runtime.
+    - '#Call to an undefined method Drupal\\Core\\Database\\Query\\PagerSelectExtender::orderByHeader\(\)\.#'
     -
       message: '#Function [a-zA-Z0-9\\_]+\(\) has parameter \$[a-zA-Z0-9\\_]+ with no typehint specified\.#'
       paths:

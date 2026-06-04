@@ -120,6 +120,9 @@ function admin_audit_trail_update_10002() {
 
   // Load and parse the YAML configuration.
   $yaml_content = file_get_contents($config_path);
+  if ($yaml_content === FALSE) {
+    return t('Unable to read the view configuration file at @path', ['@path' => $config_path]);
+  }
   $config_data = \Drupal::service('serialization.yaml')->decode($yaml_content);
 
   // Create the view from configuration.

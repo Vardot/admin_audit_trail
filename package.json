@@ -17,7 +17,7 @@
   "scripts": {
     "phpcs": "phpcs --standard=./.phpcs.xml .",
     "phpcbf": "phpcbf --standard=./.phpcs.xml .",
-    "lint:yaml": "node ./node_modules/eslint/bin/eslint.js --config=.eslintrc.json --ext .yml .",
+    "lint:yaml": "node ./node_modules/eslint/bin/eslint.js --no-eslintrc --config=.eslintrc-yaml.json --ext .yml .",
     "spellcheck": "cspell lint .",
     "test": "cucumber-js --config cucumber.js",
     "test:chromium": "BROWSER=chromium cucumber-js --config cucumber.js",
