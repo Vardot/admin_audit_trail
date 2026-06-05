@@ -6,6 +6,7 @@
     "audit report empty": ".view-admin-audit-trail .view-empty",
     "audit exposed form": "form#views-exposed-form-admin-audit-trail-page-1",
     "audit filter type select": "form.views-exposed-form select[name='type[]']",
+    "audit filter operation select": "form.views-exposed-form select[name^='operation']",
     "audit filter name": "form.views-exposed-form input[name='uid']",
     "audit filter ip": "form.views-exposed-form input[name='ip']",
     "audit filter ref id": "form.views-exposed-form input[name='ref_numeric']",
