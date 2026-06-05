@@ -551,6 +551,44 @@ When(/^(?:I |we )?create a taxonomy term named "([^"]*)"$/, async function (term
   }, `Could not create the taxonomy term "${term}"`);
 });
 
+/* multilingual setup - generic, reusable language + content-translation steps */
+When(/^(?:I |we )?add the "([^"]*)" language$/, async function (langcode) {
+  await attempt(async () => {
+    await gotoUrl(this.page, `${this.parameters.launchUrl}/admin/config/regional/language/add`);
+    // Idempotent: the predefined list omits already-added languages.
+    const added = await this.page.evaluate((lc) => {
+      const sel = document.querySelector('#edit-predefined-langcode');
+      const opt = sel && sel.querySelector(`option[value="${lc}"]`);
+      if (!opt) {
+        return false;
+      }
+      sel.value = lc;
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+      return true;
+    }, langcode);
+    if (added) {
+      await this.page.evaluate(() => document.querySelector('#edit-submit').click());
+      await waitForPageLoad(this.page, this.minWaitTime && this.minWaitTime.page);
+    }
+  }, `Could not add the "${langcode}" language`);
+});
+
+When(/^(?:I |we )?make the "([^"]*)" "([^"]*)" entity translatable$/, async function (entityType, bundle) {
+  await attempt(async () => {
+    await gotoUrl(this.page, `${this.parameters.launchUrl}/admin/config/regional/content-language`);
+    await this.page.evaluate(([et, b]) => {
+      const check = (name) => { const el = document.querySelector(`input[name="${name}"]`); if (el) el.checked = true; };
+      check(`entity_types[${et}]`);
+      check(`settings[${et}][${b}][translatable]`);
+      // Make the bundle's fields translatable too, otherwise the translation
+      // form has no editable fields and a real translation is never created.
+      document.querySelectorAll(`input[name^="settings[${et}][${b}][fields]["]`).forEach((el) => { el.checked = true; });
+    }, [entityType, bundle]);
+    await this.page.evaluate(() => document.querySelector('#edit-submit').click());
+    await waitForPageLoad(this.page, this.minWaitTime && this.minWaitTime.page);
+  }, `Could not make "${entityType} / ${bundle}" translatable`);
+});
+
 /* menu - create a menu and a menu link */
 When(/^(?:I |we )?create a menu named "([^"]*)"$/, async function (label) {
   const id = (machineName(label).replace(/_/g, '-').slice(0, 20) + '-' + uniq());
@@ -578,7 +616,42 @@ When(/^(?:I |we )?add a menu link titled "([^"]*)" to the menu I created$/, asyn
     }, title);
     await this.page.evaluate(() => document.querySelector('#edit-submit').click());
     await waitForPageLoad(this.page, this.minWaitTime && this.minWaitTime.page);
+    // Capture the created menu link content id for later translation steps. The
+    // new menu has a single link, so the first item edit link is the one added.
+    this.auditMenuLinkId = await this.page.evaluate(() => {
+      const a = document.querySelector('a[href*="/admin/structure/menu/item/"]');
+      const m = a && a.getAttribute('href').match(/\/admin\/structure\/menu\/item\/(\d+)\//);
+      return m ? m[1] : null;
+    });
   }, `Could not add the menu link "${title}"`);
+});
+
+/* menu link translations - generic add/delete of a menu link translation */
+When(/^(?:I |we )?add the "([^"]*)" translation titled "([^"]*)" to the menu link I created$/, async function (langcode, title) {
+  await attempt(async () => {
+    if (!this.auditMenuLinkId) throw new Error('No menu link created yet in this scenario.');
+    const id = this.auditMenuLinkId;
+    await gotoUrl(this.page, `${this.parameters.launchUrl}/${langcode}/admin/structure/menu/item/${id}/edit/translations/add/en/${langcode}`);
+    await this.page.evaluate((t) => {
+      const el = document.querySelector('#edit-title-0-value');
+      if (el) el.value = t;
+    }, title);
+    await this.page.evaluate(() => document.querySelector('#edit-submit').click());
+    await waitForPageLoad(this.page, this.minWaitTime && this.minWaitTime.page);
+  }, `Could not add the "${langcode}" translation "${title}" to the menu link`);
+});
+
+When(/^(?:I |we )?delete the "([^"]*)" translation of the menu link I created$/, async function (langcode) {
+  await attempt(async () => {
+    if (!this.auditMenuLinkId) throw new Error('No menu link created yet in this scenario.');
+    const id = this.auditMenuLinkId;
+    await gotoUrl(this.page, `${this.parameters.launchUrl}/${langcode}/admin/structure/menu/item/${id}/delete`);
+    await this.page.evaluate(() => {
+      const b = document.querySelector('#edit-submit') || document.querySelector('input[name="op"]');
+      if (b) b.click();
+    });
+    await waitForPageLoad(this.page, this.minWaitTime && this.minWaitTime.page);
+  }, `Could not delete the "${langcode}" translation of the menu link`);
 });
 
 /* block_content - create a custom (basic) block */

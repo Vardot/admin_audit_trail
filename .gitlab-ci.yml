@@ -104,7 +104,7 @@ webship-js-test:
     # Core modules the event scenarios drive through the UI.
     - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT en -y
         media media_library workflows content_moderation field_ui
-        redirect entityqueue paragraphs group
+        redirect entityqueue paragraphs group language content_translation
     # Enable the module plus EVERY handler submodule so all event types are
     # recorded for the per-submodule scenarios to assert.
     - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT en -y
@@ -129,6 +129,12 @@ webship-js-test:
     # Provision the fixtures each submodule scenario needs (image media type,
     # Editorial workflow on article, a group type, a paragraph type + field).
     - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT scr $CI_PROJECT_DIR/tests/fixtures/provision-fixtures.php
+    # Multilingual environment for the menu link translation scenario (#3343561):
+    # a Spanish language and translatable custom menu links. Enabling content
+    # translation must be followed by a cache rebuild so the per-language
+    # translation routes exist before the browser scenario runs.
+    - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT php:eval
+        'Drupal\language\Entity\ConfigurableLanguage::createFromLangcode("es")->save(); Drupal::service("content_translation.manager")->setEnabled("menu_link_content", "menu_link_content", TRUE);'
     - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT cache:rebuild
     - !reference [.fragments, node_playwright]
   script:

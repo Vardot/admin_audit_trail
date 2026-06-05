@@ -39,6 +39,7 @@
     "audit row taxonomy term insert": ".view-admin-audit-trail tbody tr:has(td.views-field-type:text-is('taxonomy')):has(td.views-field-operation:has-text('term insert'))",
     "audit row menu insert": ".view-admin-audit-trail tbody tr:has(td.views-field-type:text-is('menu')):has(td.views-field-operation:text-is('insert'))",
     "audit row menu link insert": ".view-admin-audit-trail tbody tr:has(td.views-field-type:text-is('menu')):has(td.views-field-operation:has-text('link insert'))",
+    "audit row menu link translation delete": ".view-admin-audit-trail tbody tr:has(td.views-field-type:text-is('menu')):has(td.views-field-operation:has-text('link translation delete'))",
     "audit row block_content insert": ".view-admin-audit-trail tbody tr:has(td.views-field-type:text-is('block_content')):has(td.views-field-operation:text-is('insert'))",
     "audit row comment insert": ".view-admin-audit-trail tbody tr:has(td.views-field-type:text-is('comment')):has(td.views-field-operation:text-is('insert'))",
     "audit row file insert": ".view-admin-audit-trail tbody tr:has(td.views-field-type:text-is('file')):has(td.views-field-operation:text-is('insert'))",
