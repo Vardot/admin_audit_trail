@@ -6,11 +6,12 @@
  */
 
 use Drupal\Component\Utility\Unicode;
-use Drupal\Core\Render\Element;
-use Drupal\Core\Url;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
+use Drupal\views\ViewExecutable;
 
 /**
  * Implements hook_help().
@@ -298,5 +299,17 @@ function admin_audit_trail_cron() {
         ->condition('lid', $min_row, '<')
         ->execute();
     }
+  }
+}
+
+/**
+ * Implements hook_views_pre_render().
+ *
+ * Attaches the report CSS library so long path/description values wrap instead
+ * of stretching the table (issue #3583295).
+ */
+function admin_audit_trail_views_pre_render(ViewExecutable $view) {
+  if ($view->id() === 'admin_audit_trail') {
+    $view->element['#attached']['library'][] = 'admin_audit_trail/report';
   }
 }

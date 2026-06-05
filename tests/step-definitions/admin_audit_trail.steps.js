@@ -351,6 +351,29 @@ Then(/^the "([^"]*)" element should contain text "([^"]*)"(?: within (\d+) secon
 });
 
 /**
+ * Assert an element's computed CSS value for a property.
+ *
+ * Generic and reusable - resolves the selector the same way as the other
+ * element steps and reads window.getComputedStyle, so it works for any element
+ * and any CSS property.
+ *
+ * Example: Then the "audit col path" element should have the computed style "overflow-wrap" of "anywhere"
+ */
+Then(/^the "([^"]*)" element should have the computed style "([^"]*)" of "([^"]*)"$/, async function (name, property, value) {
+  const sel = resolveName(this, name);
+  await attempt(async () => {
+    await this.page.waitForFunction(
+      ([s, p, v]) => {
+        const el = document.querySelector(s);
+        return !!el && window.getComputedStyle(el).getPropertyValue(p).trim() === v;
+      },
+      [sel, property, value],
+      { timeout: 10000, polling: 100 },
+    );
+  }, `Expected "${name}" (${sel}) computed ${property} to be "${value}"`);
+});
+
+/**
  * Assert that the audit report lists at least one row whose Operation cell
  * contains the given text. Unlike "the 'audit col operation' element should
  * contain text", this scans EVERY operation cell, so it holds even when the

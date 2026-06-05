@@ -1,0 +1,5 @@
+report:
+  version: VERSION
+  css:
+    component:
+      css/admin_audit_trail.report.css: {}

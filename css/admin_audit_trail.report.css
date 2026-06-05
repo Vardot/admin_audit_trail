@@ -1,0 +1,15 @@
+/**
+ * @file
+ * Admin Audit Trail report styles (issue #3583295).
+ *
+ * Long, unbreakable values in the path and description columns - for example a
+ * very long URL alias - have no natural break opportunities and stretch the
+ * report table awkwardly wide. Allow those two columns to wrap. The IP,
+ * reference and user columns are intentionally left untouched so addresses and
+ * IDs stay readable on a single line.
+ */
+
+.view-admin-audit-trail td.views-field-path,
+.view-admin-audit-trail td.views-field-description {
+  overflow-wrap: anywhere;
+}
