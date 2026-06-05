@@ -98,6 +98,9 @@ webship-js-test:
     - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT site:install standard
         --db-url=$SIMPLETEST_DB --account-name=webmaster --account-pass=dD.123123ddd
         --site-name="Admin Audit Trail Test" -y
+    # Make the tests/modules/ test helper discoverable by drush en.
+    - chmod 644 $CI_PROJECT_DIR/$_WEB_ROOT/sites/default/settings.php
+    - echo '$settings["extension_discovery_scan_tests"] = TRUE;' >> $CI_PROJECT_DIR/$_WEB_ROOT/sites/default/settings.php
     # Core modules the event scenarios drive through the UI.
     - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT en -y
         media media_library workflows content_moderation field_ui
@@ -122,6 +125,7 @@ webship-js-test:
         admin_audit_trail_user
         admin_audit_trail_user_roles
         admin_audit_trail_workflows
+        admin_audit_trail_test
     # Provision the fixtures each submodule scenario needs (image media type,
     # Editorial workflow on article, a group type, a paragraph type + field).
     - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT scr $CI_PROJECT_DIR/tests/fixtures/provision-fixtures.php

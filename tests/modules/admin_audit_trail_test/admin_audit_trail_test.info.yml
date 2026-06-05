@@ -1,0 +1,7 @@
+name: 'Admin Audit Trail Test'
+type: module
+description: 'Test helper that injects an over-long path so the path trim can be exercised.'
+package: Testing
+core_version_requirement: ^10 || ^11
+dependencies:
+  - admin_audit_trail:admin_audit_trail

@@ -41,6 +41,31 @@ Every audit trail log entry contains:
 ]
 ```
 
+### Be aware of the column sizes
+
+The values you pass are written to fixed-size database columns. Keep them within
+the limits below, or the insert will fail with
+`SQLSTATE[22001] ... Data too long for column ...`:
+
+| Field | Column type | Limit |
+|-------|-------------|-------|
+| `type` | `varchar(50)` | 50 characters |
+| `operation` | `varchar(50)` | 50 characters |
+| `path` | `varchar(255)` | 255 characters |
+| `ref_char` | `varchar(255)` | 255 characters |
+| `ip` | `varchar(255)` | 255 characters |
+| `description` | `text` (medium) | very large |
+
+`admin_audit_trail_insert()` trims `path` to 255 characters for you (it is
+auto-filled from the request and can be long for some setups, for example S3
+file paths). Every other value is your handler's responsibility - if `ref_char`,
+`type` or `operation` can exceed its limit, truncate it before logging, for
+example with the module's helper:
+
+```php
+$log['ref_char'] = admin_audit_trail_safe_truncate($title, 255);
+```
+
 ## Implementing Custom Handlers
 
 ### Method 1: Hook Implementation
@@ -623,6 +648,15 @@ class CustomAuditTrailTest extends KernelTestBase {
 - **Type**: Use entity type or event category
 - **Operation**: Use standard terms (insert, update, delete, submit, etc.)
 - **Description**: Human-readable, include key details
+
+### Mind the column sizes
+
+`type` and `operation` are limited to 50 characters; `path`, `ref_char` and
+`ip` to 255. `admin_audit_trail_insert()` trims `path` automatically, but your
+handler must keep its own values within range. When a value can be long (a
+node title, a generated reference, a deep path), truncate it - by characters,
+not bytes, so multibyte text is never split - using `admin_audit_trail_safe_truncate($value, 255)`.
+See the "Be aware of the column sizes" note above for the full table.
 
 ### 2. Provide Context
 

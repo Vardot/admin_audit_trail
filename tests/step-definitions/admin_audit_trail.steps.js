@@ -730,3 +730,23 @@ When(/^(?:I |we )?request a new password for "([^"]*)"$/, async function (userna
     await waitForPageLoad(this.page, this.minWaitTime && this.minWaitTime.page);
   }, `Could not request a new password for "${username}"`);
 });
+
+/**
+ * Assert the trimmed text content of a named element is at most N characters.
+ *
+ * Generic - reusable for any element whose length must be bounded (e.g. a value
+ * trimmed to a database column limit).
+ *
+ * Example #1: Then the "audit col path" element text should be at most 255 characters long
+ * Example #2: Then the "summary" element text should be at most 100 characters long
+ */
+Then(/^the "([^"]*)" element text should be at most (\d+) characters long$/, async function (name, max) {
+  const sel = resolveName(this, name);
+  const limit = Number(max);
+  await attempt(async () => {
+    const text = ((await this.page.locator(sel).first().textContent()) || '').trim();
+    if (text.length > limit) {
+      throw new Error(`text length was ${text.length} (> ${limit})`);
+    }
+  }, `Expected "${name}" text to be at most ${limit} characters`);
+});

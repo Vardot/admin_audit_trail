@@ -101,7 +101,11 @@ function admin_audit_trail_insert(array &$log) {
     'created' => $log['created'],
     'uid' => $log['uid'],
     'ip' => $log['ip'] ?? '',
-    'path' => $log['path'],
+    // Trim the path to the column limit (varchar 255). Long values - e.g. S3
+    // file paths added by s3fs_cors - would otherwise throw "Data too long for
+    // column 'path'". admin_audit_trail_safe_truncate() cuts by characters so
+    // multibyte paths are never split mid-sequence.
+    'path' => admin_audit_trail_safe_truncate($log['path'], 255),
     'ref_char' => $log['ref_char'],
     'ref_numeric' => $log['ref_numeric'],
   ];
