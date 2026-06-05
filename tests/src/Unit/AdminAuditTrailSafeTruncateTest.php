@@ -60,4 +60,26 @@ class AdminAuditTrailSafeTruncateTest extends UnitTestCase {
     $this->assertSame('', admin_audit_trail_safe_truncate(NULL, 255));
   }
 
+  /**
+   * A percent-encoded non-ASCII source decodes to a short, readable ref_char.
+   *
+   * Mirrors the redirect handler fix for issue #3584163: getSourceUrl() returns
+   * an RFC 3986 percent-encoded path (each non-ASCII character ~9 chars), which
+   * overflows the varchar(255) ref_char column. rawurldecode() shrinks it and
+   * admin_audit_trail_safe_truncate() guarantees it fits.
+   */
+  public function testDecodedNonAsciiSourceFitsRefChar(): void {
+    // 40x "시" percent-encoded ("%EC%8B%9C") => 360 characters, over the limit.
+    $encoded = str_repeat('%EC%8B%9C', 40);
+    $this->assertGreaterThan(255, strlen($encoded));
+
+    $ref_char = admin_audit_trail_safe_truncate(rawurldecode($encoded), 255);
+
+    $this->assertLessThanOrEqual(255, mb_strlen($ref_char));
+    $this->assertTrue(mb_check_encoding($ref_char, 'UTF-8'));
+    // The stored value is readable (decoded), not percent-encoded.
+    $this->assertStringContainsString("\u{C2DC}", $ref_char);
+    $this->assertStringNotContainsString('%EC', $ref_char);
+  }
+
 }
