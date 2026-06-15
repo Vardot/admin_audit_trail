@@ -1,0 +1,5 @@
+
+services:
+  Drupal\admin_audit_trail_media\Hook\AdminAuditTrailMediaHooks:
+    class: Drupal\admin_audit_trail_media\Hook\AdminAuditTrailMediaHooks
+    autowire: true

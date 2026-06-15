@@ -1,0 +1,5 @@
+
+services:
+  Drupal\admin_audit_trail_entityqueue\Hook\AdminAuditTrailEntityqueueHooks:
+    class: Drupal\admin_audit_trail_entityqueue\Hook\AdminAuditTrailEntityqueueHooks
+    autowire: true

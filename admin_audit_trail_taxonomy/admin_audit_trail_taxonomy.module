@@ -5,113 +5,61 @@
  * Logs menu CUD commands in the admin_audit_trail module.
  */
 
+use Drupal\Core\Hook\Attribute\LegacyHook;
+use Drupal\admin_audit_trail_taxonomy\Hook\AdminAuditTrailTaxonomyHooks;
+
 /**
  * Implements hook_admin_audit_trail_handlers().
  */
+#[LegacyHook]
 function admin_audit_trail_taxonomy_admin_audit_trail_handlers() {
-  // Taxonomy event log handler.
-  $handlers = [];
-  $handlers['taxonomy'] = [
-    'title' => t('Taxonomy'),
-  ];
-  return $handlers;
+  return \Drupal::service(AdminAuditTrailTaxonomyHooks::class)->adminAuditTrailHandlers();
 }
 
 /**
  * Implements hook_taxonomy_vocabulary_insert().
  */
+#[LegacyHook]
 function admin_audit_trail_taxonomy_taxonomy_vocabulary_insert($vocabulary) {
-  $log = [
-    'type' => 'taxonomy',
-    'operation' => 'vocabulary insert',
-    'description' => t('%title (%name)', [
-      '%title' => $vocabulary->get('name'),
-      '%name' => $vocabulary->get('vid'),
-    ]),
-    'ref_char' => $vocabulary->get('vid'),
-  ];
-  admin_audit_trail_insert($log);
+  \Drupal::service(AdminAuditTrailTaxonomyHooks::class)->taxonomyVocabularyInsert($vocabulary);
 }
 
 /**
  * Implements hook_taxonomy_vocabulary_update().
  */
+#[LegacyHook]
 function admin_audit_trail_taxonomy_taxonomy_vocabulary_update($vocabulary) {
-  $log = [
-    'type' => 'taxonomy',
-    'operation' => 'vocabulary update',
-    'description' => t('%title (%name)', [
-      '%title' => $vocabulary->label(),
-      '%name' => $vocabulary->getOriginalId(),
-    ]),
-    'ref_char' => $vocabulary->getOriginalId(),
-  ];
-  admin_audit_trail_insert($log);
+  \Drupal::service(AdminAuditTrailTaxonomyHooks::class)->taxonomyVocabularyUpdate($vocabulary);
 }
 
 /**
  * Implements hook_taxonomy_vocabulary_delete().
  */
+#[LegacyHook]
 function admin_audit_trail_taxonomy_taxonomy_vocabulary_delete($vocabulary) {
-  $log = [
-    'type' => 'taxonomy',
-    'operation' => 'vocabulary delete',
-    'description' => t('%title (%name)', [
-      '%title' => $vocabulary->label(),
-      '%name' => $vocabulary->getOriginalId(),
-    ]),
-    'ref_char' => $vocabulary->getOriginalId(),
-  ];
-  admin_audit_trail_insert($log);
+  \Drupal::service(AdminAuditTrailTaxonomyHooks::class)->taxonomyVocabularyDelete($vocabulary);
 }
 
 /**
  * Implements hook_taxonomy_term_insert().
  */
+#[LegacyHook]
 function admin_audit_trail_taxonomy_taxonomy_term_insert($term) {
-  $log = [
-    'type' => 'taxonomy',
-    'operation' => 'term insert',
-    'description' => t('%name (%tid)', [
-      '%name' => $term->getName(),
-      '%tid' => $term->id(),
-    ]),
-    'ref_numeric' => $term->id(),
-    'ref_char' => $term->get('vid')->target_id,
-  ];
-  admin_audit_trail_insert($log);
+  \Drupal::service(AdminAuditTrailTaxonomyHooks::class)->taxonomyTermInsert($term);
 }
 
 /**
  * Implements hook_taxonomy_term_update().
  */
+#[LegacyHook]
 function admin_audit_trail_taxonomy_taxonomy_term_update($term) {
-  $log = [
-    'type' => 'taxonomy',
-    'operation' => 'term update',
-    'description' => t('%name (%tid)', [
-      '%name' => $term->getName(),
-      '%tid' => $term->id(),
-    ]),
-    'ref_numeric' => $term->id(),
-    'ref_char' => $term->get('vid')->target_id,
-  ];
-  admin_audit_trail_insert($log);
+  \Drupal::service(AdminAuditTrailTaxonomyHooks::class)->taxonomyTermUpdate($term);
 }
 
 /**
  * Implements hook_taxonomy_term_delete().
  */
+#[LegacyHook]
 function admin_audit_trail_taxonomy_taxonomy_term_delete($term) {
-  $log = [
-    'type' => 'taxonomy',
-    'operation' => 'term delete',
-    'description' => t('%name (%tid)', [
-      '%name' => $term->getName(),
-      '%tid' => $term->id(),
-    ]),
-    'ref_numeric' => $term->id(),
-    'ref_char' => $term->get('vid')->target_id,
-  ];
-  admin_audit_trail_insert($log);
+  \Drupal::service(AdminAuditTrailTaxonomyHooks::class)->taxonomyTermDelete($term);
 }

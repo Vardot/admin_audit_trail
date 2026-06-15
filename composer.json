@@ -16,7 +16,7 @@
     "source": "http://cgit.drupalcode.org/admin_audit_trail"
   },
   "require": {
-    "drupal/core": "^10 || ^11"
+    "drupal/core": "^10.1 || ^11 || ^12"
   },
   "require-dev": {
     "drupal/entityqueue": "^1.7",

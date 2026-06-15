@@ -1,0 +1,5 @@
+
+services:
+  Drupal\admin_audit_trail_taxonomy\Hook\AdminAuditTrailTaxonomyHooks:
+    class: Drupal\admin_audit_trail_taxonomy\Hook\AdminAuditTrailTaxonomyHooks
+    autowire: true

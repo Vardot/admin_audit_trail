@@ -1,0 +1,9 @@
+
+services:
+  Drupal\admin_audit_trail\AdminAuditTrailLogger:
+    class: Drupal\admin_audit_trail\AdminAuditTrailLogger
+    autowire: true
+
+  Drupal\admin_audit_trail\Hook\AdminAuditTrailHooks:
+    class: Drupal\admin_audit_trail\Hook\AdminAuditTrailHooks
+    autowire: true

@@ -1,0 +1,5 @@
+
+services:
+  Drupal\admin_audit_trail_workflows\Hook\AdminAuditTrailWorkflowsHooks:
+    class: Drupal\admin_audit_trail_workflows\Hook\AdminAuditTrailWorkflowsHooks
+    autowire: true

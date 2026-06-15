@@ -5,65 +5,37 @@
  * Logs user CUD commands in the admin_audit_trail module.
  */
 
+use Drupal\Core\Hook\Attribute\LegacyHook;
+use Drupal\admin_audit_trail_group\Hook\AdminAuditTrailGroupHooks;
+
 /**
  * Implements hook_admin_audit_trail_handlers().
  */
+#[LegacyHook]
 function admin_audit_trail_group_admin_audit_trail_handlers() {
-  // User event log handler.
-  $handlers = [];
-  $handlers['group'] = [
-    'title' => t('Group'),
-  ];
-  return $handlers;
+  return \Drupal::service(AdminAuditTrailGroupHooks::class)->adminAuditTrailHandlers();
 }
 
 /**
  * Implements hook_group_insert().
  */
+#[LegacyHook]
 function admin_audit_trail_group_group_insert($group) {
-  $log = [
-    'type' => 'group',
-    'operation' => 'insert',
-    'description' => t('%bundle: %title', [
-      '%bundle' => $group->bundle(),
-      '%title' => $group->label(),
-    ]),
-    'ref_numeric' => $group->id(),
-    'ref_char' => $group->label(),
-  ];
-  admin_audit_trail_insert($log);
+  \Drupal::service(AdminAuditTrailGroupHooks::class)->groupInsert($group);
 }
 
 /**
  * Implements hook_group_update().
  */
+#[LegacyHook]
 function admin_audit_trail_group_group_update($group) {
-  $log = [
-    'type' => 'group',
-    'operation' => 'update',
-    'description' => t('%bundle: %title', [
-      '%bundle' => $group->bundle(),
-      '%title' => $group->label(),
-    ]),
-    'ref_numeric' => $group->id(),
-    'ref_char' => $group->label(),
-  ];
-  admin_audit_trail_insert($log);
+  \Drupal::service(AdminAuditTrailGroupHooks::class)->groupUpdate($group);
 }
 
 /**
  * Implements hook_group_delete().
  */
+#[LegacyHook]
 function admin_audit_trail_group_group_delete($group) {
-  $log = [
-    'type' => 'group',
-    'operation' => 'delete',
-    'description' => t('%bundle: %title', [
-      '%bundle' => $group->bundle(),
-      '%title' => $group->label(),
-    ]),
-    'ref_numeric' => $group->id(),
-    'ref_char' => $group->label(),
-  ];
-  admin_audit_trail_insert($log);
+  \Drupal::service(AdminAuditTrailGroupHooks::class)->groupDelete($group);
 }

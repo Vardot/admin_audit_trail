@@ -5,65 +5,38 @@
  * Logs file entity CUD commands in the admin_audit_trail module.
  */
 
+use Drupal\Core\Hook\Attribute\LegacyHook;
+use Drupal\admin_audit_trail_file\Hook\AdminAuditTrailFileHooks;
 use Drupal\file\Entity\File;
 
 /**
  * Implements hook_admin_audit_trail_handlers().
  */
+#[LegacyHook]
 function admin_audit_trail_file_admin_audit_trail_handlers() {
-  $handlers = [];
-  // File event log handler.
-  $handlers['file'] = [
-    'title' => t('File'),
-  ];
-
-  return $handlers;
+  return \Drupal::service(AdminAuditTrailFileHooks::class)->adminAuditTrailHandlers();
 }
 
 /**
  * Implements hook_ENTITY_TYPE_insert().
  */
+#[LegacyHook]
 function admin_audit_trail_file_file_insert(File $file) {
-  $log = [
-    'type' => 'file',
-    'operation' => 'insert',
-    'description' => $file->getFileUri(),
-    'ref_numeric' => $file->id(),
-    'ref_char' => $file->getFilename(),
-  ];
-
-  // Insert log.
-  admin_audit_trail_insert($log);
+  \Drupal::service(AdminAuditTrailFileHooks::class)->fileInsert($file);
 }
 
 /**
  * Implements hook_ENTITY_TYPE_update().
  */
+#[LegacyHook]
 function admin_audit_trail_file_file_update(File $file) {
-  $log = [
-    'type' => 'file',
-    'operation' => 'update',
-    'description' => $file->getFileUri(),
-    'ref_numeric' => $file->id(),
-    'ref_char' => $file->getFilename(),
-  ];
-
-  // Insert log.
-  admin_audit_trail_insert($log);
+  \Drupal::service(AdminAuditTrailFileHooks::class)->fileUpdate($file);
 }
 
 /**
  * Implements hook_ENTITY_TYPE_delete().
  */
+#[LegacyHook]
 function admin_audit_trail_file_file_delete(File $file) {
-  $log = [
-    'type' => 'file',
-    'operation' => 'delete',
-    'description' => $file->getFileUri(),
-    'ref_numeric' => $file->id(),
-    'ref_char' => $file->getFilename(),
-  ];
-
-  // Insert log.
-  admin_audit_trail_insert($log);
+  \Drupal::service(AdminAuditTrailFileHooks::class)->fileDelete($file);
 }

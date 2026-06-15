@@ -5,13 +5,13 @@
  * Logs config CUD commands in the admin_audit_trail module.
  */
 
+use Drupal\Core\Hook\Attribute\LegacyHook;
+use Drupal\admin_audit_trail_config\Hook\AdminAuditTrailConfigHooks;
+
 /**
  * Implements hook_admin_audit_trail_handlers().
  */
+#[LegacyHook]
 function admin_audit_trail_config_admin_audit_trail_handlers() {
-  $handlers = [];
-  $handlers['config'] = [
-    'title' => t('Configuration'),
-  ];
-  return $handlers;
+  return \Drupal::service(AdminAuditTrailConfigHooks::class)->adminAuditTrailHandlers();
 }

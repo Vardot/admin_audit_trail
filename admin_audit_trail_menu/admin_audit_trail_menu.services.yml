@@ -1,0 +1,5 @@
+
+services:
+  Drupal\admin_audit_trail_menu\Hook\AdminAuditTrailMenuHooks:
+    class: Drupal\admin_audit_trail_menu\Hook\AdminAuditTrailMenuHooks
+    autowire: true

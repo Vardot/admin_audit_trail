@@ -5,194 +5,61 @@
  * Logs menu CUD commands in the admin_audit_trail module.
  */
 
-use Drupal\Core\Entity\TranslatableInterface;
+use Drupal\Core\Hook\Attribute\LegacyHook;
+use Drupal\admin_audit_trail_menu\Hook\AdminAuditTrailMenuHooks;
 
 /**
  * Implements hook_admin_audit_trail_handlers().
  */
+#[LegacyHook]
 function admin_audit_trail_menu_admin_audit_trail_handlers() {
-  $handlers = [];
-
-  $handlers['menu'] = [
-    'title' => t('Menu'),
-  ];
-  return $handlers;
+  return \Drupal::service(AdminAuditTrailMenuHooks::class)->adminAuditTrailHandlers();
 }
 
 /**
  * Implements hook_menu_insert().
  */
+#[LegacyHook]
 function admin_audit_trail_menu_menu_insert($menu) {
-  $log = [
-    'type' => 'menu',
-    'operation' => 'insert',
-    'description' => t('%title (%name)', [
-      '%title' => $menu->get('label'),
-      '%name' => $menu->get('id'),
-    ]),
-    'ref_char' => $menu->get('id'),
-  ];
-  admin_audit_trail_insert($log);
+  \Drupal::service(AdminAuditTrailMenuHooks::class)->menuInsert($menu);
 }
 
 /**
  * Implements hook_menu_update().
  */
+#[LegacyHook]
 function admin_audit_trail_menu_menu_update($menu) {
-  $log = [
-    'type' => 'menu',
-    'operation' => 'update',
-    'description' => t('%title (%name)', [
-      '%title' => $menu->get('label'),
-      '%name' => $menu->get('id'),
-    ]),
-    'ref_char' => $menu->get('id'),
-  ];
-  admin_audit_trail_insert($log);
+  \Drupal::service(AdminAuditTrailMenuHooks::class)->menuUpdate($menu);
 }
 
 /**
  * Implements hook_menu_delete().
  */
+#[LegacyHook]
 function admin_audit_trail_menu_menu_delete($menu) {
-  $log = [
-    'type' => 'menu',
-    'operation' => 'delete',
-    'description' => t('%title (%name)', [
-      '%title' => $menu->get('label'),
-      '%name' => $menu->get('id'),
-    ]),
-    'ref_char' => $menu->get('id'),
-  ];
-  admin_audit_trail_insert($log);
+  \Drupal::service(AdminAuditTrailMenuHooks::class)->menuDelete($menu);
 }
 
 /**
- * Returns a menu link content translation that is safe to read fields from.
- *
- * When a menu link translation is deleted, Drupal can hand the saved entity to
- * the CUD hooks while it still reports the just-removed language as the active
- * translation. Reading any field on such an object throws "The entity object
- * refers to a removed translation (…) and cannot be manipulated." and breaks
- * the request (issue #3343561). The untranslated (default) translation always
- * stays valid, so fall back to it whenever the active translation is gone.
- *
- * @param \Drupal\menu_link_content\MenuLinkContentInterface $link
- *   The menu link content entity passed to a CUD hook.
- *
- * @return \Drupal\menu_link_content\MenuLinkContentInterface
- *   A translation whose fields are safe to read.
+ * Implements hook_ENTITY_TYPE_insert() for menu_link_content entities.
  */
-function _admin_audit_trail_menu_safe_link($link) {
-  if ($link->hasTranslation($link->language()->getId())) {
-    return $link;
-  }
-  return $link->getUntranslated();
-}
-
-/**
- * Returns the languages of translations removed in the current save.
- *
- * Compares the saved menu link against its previous version: any language that
- * existed before but not now was removed (a translation deletion).
- *
- * @param \Drupal\menu_link_content\MenuLinkContentInterface $link
- *   The menu link content entity being saved.
- *
- * @return string[]
- *   The removed translation languages (empty for a normal update).
- */
-function _admin_audit_trail_menu_removed_translations($link) {
-  $original = method_exists($link, 'getOriginal') ? $link->getOriginal() : ($link->original ?? NULL);
-  if (!$original instanceof TranslatableInterface) {
-    return [];
-  }
-  return array_values(array_diff(
-    array_keys($original->getTranslationLanguages()),
-    array_keys($link->getTranslationLanguages())
-  ));
-}
-
-/**
- * Implements hook_menu_link_insert().
- */
+#[LegacyHook]
 function admin_audit_trail_menu_menu_link_content_insert($link) {
-  $link = _admin_audit_trail_menu_safe_link($link);
-  $log = [
-    'type' => 'menu',
-    'operation' => 'link insert',
-    'description' => t('%title (%id), %path', [
-      '%title' => $link->getTitle(),
-      '%id' => $link->id(),
-      '%path' => $link->get('link')->uri,
-    ]),
-    'ref_numeric' => $link->id(),
-    'ref_char' => $link->getMenuName(),
-  ];
-
-  admin_audit_trail_insert($log);
+  \Drupal::service(AdminAuditTrailMenuHooks::class)->menuLinkContentInsert($link);
 }
 
 /**
- * Implements hook_menu_link_update().
+ * Implements hook_ENTITY_TYPE_update() for menu_link_content entities.
  */
+#[LegacyHook]
 function admin_audit_trail_menu_menu_link_content_update($link) {
-  // Deleting a menu link translation removes the translation and saves the
-  // entity, firing this update hook with one fewer translation. Record it as a
-  // distinct "translation delete" event and read the fields from the (valid)
-  // default translation, so the request never breaks with "The entity object
-  // refers to a removed translation …" (issue #3343561).
-  $removed = _admin_audit_trail_menu_removed_translations($link);
-  if ($removed) {
-    $default = $link->getUntranslated();
-    $log = [
-      'type' => 'menu',
-      'operation' => 'link translation delete',
-      'description' => t('%title (%id), %path - removed %languages translation', [
-        '%title' => $default->getTitle(),
-        '%id' => $default->id(),
-        '%path' => $default->get('link')->uri,
-        '%languages' => implode(', ', $removed),
-      ]),
-      'ref_numeric' => $default->id(),
-      'ref_char' => $default->getMenuName(),
-    ];
-    admin_audit_trail_insert($log);
-    return;
-  }
-
-  $link = _admin_audit_trail_menu_safe_link($link);
-  $log = [
-    'type' => 'menu',
-    'operation' => 'link update',
-    'description' => t('%title (%id), %path', [
-      '%title' => $link->getTitle(),
-      '%id' => $link->id(),
-      '%path' => $link->get('link')->uri,
-    ]),
-    'ref_numeric' => $link->id(),
-    'ref_char' => $link->getMenuName(),
-  ];
-
-  admin_audit_trail_insert($log);
+  \Drupal::service(AdminAuditTrailMenuHooks::class)->menuLinkContentUpdate($link);
 }
 
 /**
- * Implements hook_menu_link_delete().
+ * Implements hook_ENTITY_TYPE_delete() for menu_link_content entities.
  */
+#[LegacyHook]
 function admin_audit_trail_menu_menu_link_content_delete($link) {
-  $link = _admin_audit_trail_menu_safe_link($link);
-  $log = [
-    'type' => 'menu',
-    'operation' => 'link delete',
-    'description' => t('%title (%id), %path', [
-      '%title' => $link->getTitle(),
-      '%id' => $link->id(),
-      '%path' => $link->get('link')->uri,
-    ]),
-    'ref_numeric' => $link->id(),
-    'ref_char' => $link->getMenuName(),
-  ];
-
-  admin_audit_trail_insert($log);
+  \Drupal::service(AdminAuditTrailMenuHooks::class)->menuLinkContentDelete($link);
 }

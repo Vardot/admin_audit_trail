@@ -1,0 +1,5 @@
+
+services:
+  Drupal\admin_audit_trail_paragraphs\Hook\AdminAuditTrailParagraphsHooks:
+    class: Drupal\admin_audit_trail_paragraphs\Hook\AdminAuditTrailParagraphsHooks
+    autowire: true

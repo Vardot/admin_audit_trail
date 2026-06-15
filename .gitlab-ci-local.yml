@@ -119,11 +119,15 @@ webship-js-test:
     # Make the tests/modules/ test helper discoverable by drush en.
     - chmod 644 web/sites/default/settings.php
     - echo '$settings["extension_discovery_scan_tests"] = TRUE;' >> web/sites/default/settings.php
-    - vendor/bin/drush en -y media media_library workflows content_moderation field_ui redirect entityqueue paragraphs group
+    - vendor/bin/drush en -y media media_library workflows content_moderation field_ui redirect entityqueue paragraphs group language content_translation
     - vendor/bin/drush en -y admin_audit_trail admin_audit_trail_auth admin_audit_trail_block_content admin_audit_trail_comment admin_audit_trail_config admin_audit_trail_entityqueue admin_audit_trail_file admin_audit_trail_group admin_audit_trail_media admin_audit_trail_menu admin_audit_trail_node admin_audit_trail_paragraphs admin_audit_trail_redirect admin_audit_trail_taxonomy admin_audit_trail_user admin_audit_trail_user_roles admin_audit_trail_workflows admin_audit_trail_test
     # drush scr resolves the path relative to cwd, so run it from inside $SITE.
     - cp "$CI_PROJECT_DIR/tests/fixtures/provision-fixtures.php" "$SITE/provision-fixtures.php"
     - vendor/bin/drush scr provision-fixtures.php
+    # Multilingual environment for the menu link translation scenario (#3343561):
+    # a Spanish language and translatable custom menu links. Mirrors the
+    # canonical .gitlab-ci.yml so the local runner exercises the same path.
+    - vendor/bin/drush php:eval 'Drupal\language\Entity\ConfigurableLanguage::createFromLangcode("es")->save(); Drupal::service("content_translation.manager")->setEnabled("menu_link_content", "menu_link_content", TRUE);'
     - vendor/bin/drush cr
     # --- Serve the site in the background ----------------------------------
     - chmod -R 777 web/sites/default/files

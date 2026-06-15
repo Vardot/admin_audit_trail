@@ -5,6 +5,9 @@
  * Test helper for the Admin Audit Trail module.
  */
 
+use Drupal\Core\Hook\Attribute\LegacyHook;
+use Drupal\admin_audit_trail_test\Hook\AdminAuditTrailTestHooks;
+
 /**
  * Implements hook_admin_audit_trail_log_alter().
  *
@@ -12,8 +15,7 @@
  * the 255-character "path" column so the trim in admin_audit_trail_insert()
  * (issue #3588241) is exercised end-to-end through a real web request.
  */
+#[LegacyHook]
 function admin_audit_trail_test_admin_audit_trail_log_alter(array &$log) {
-  if (isset($log['ref_char']) && str_contains((string) $log['ref_char'], 'LONGPATH')) {
-    $log['path'] = 'longpath/' . str_repeat('a', 400);
-  }
+  \Drupal::service(AdminAuditTrailTestHooks::class)->adminAuditTrailLogAlter($log);
 }

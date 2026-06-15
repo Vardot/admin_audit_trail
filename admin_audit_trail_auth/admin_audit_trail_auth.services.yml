@@ -1,0 +1,5 @@
+
+services:
+  Drupal\admin_audit_trail_auth\Hook\AdminAuditTrailAuthHooks:
+    class: Drupal\admin_audit_trail_auth\Hook\AdminAuditTrailAuthHooks
+    autowire: true

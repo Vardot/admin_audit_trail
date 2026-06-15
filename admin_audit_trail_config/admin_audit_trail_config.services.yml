@@ -3,3 +3,7 @@ services:
     class: Drupal\admin_audit_trail_config\EventSubscriber\ConfigEventSubscriber
     tags:
       - { name: event_subscriber }
+
+  Drupal\admin_audit_trail_config\Hook\AdminAuditTrailConfigHooks:
+    class: Drupal\admin_audit_trail_config\Hook\AdminAuditTrailConfigHooks
+    autowire: true

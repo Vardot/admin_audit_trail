@@ -1,0 +1,5 @@
+
+services:
+  Drupal\admin_audit_trail_block_content\Hook\AdminAuditTrailBlockContentHooks:
+    class: Drupal\admin_audit_trail_block_content\Hook\AdminAuditTrailBlockContentHooks
+    autowire: true

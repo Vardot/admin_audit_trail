@@ -6,6 +6,7 @@ namespace Drupal\Tests\admin_audit_trail_menu\Kernel;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\KernelTests\KernelTestBase;
+use Drupal\admin_audit_trail_menu\Hook\AdminAuditTrailMenuHooks;
 use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\menu_link_content\Entity\MenuLinkContent;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
@@ -113,23 +114,24 @@ class MenuLinkContentTranslationDeleteTest extends KernelTestBase {
    * The safe-link helper falls back to the untranslated default translation.
    *
    * When an entity object refers to a removed active translation, reading its
-   * fields throws; _admin_audit_trail_menu_safe_link() must return a valid
+   * fields throws; AdminAuditTrailMenuHooks::safeLink() must return a valid
    * translation so the hooks never fatal.
    */
   public function testSafeLinkFallsBackForRemovedTranslation(): void {
     $storage = $this->container->get('entity_type.manager')
       ->getStorage('menu_link_content');
+    $hooks = $this->container->get(AdminAuditTrailMenuHooks::class);
     $id = $this->createTranslatedLink()->id();
 
     // A valid object is returned unchanged.
     $valid = $storage->loadUnchanged($id);
-    $this->assertSame($valid, _admin_audit_trail_menu_safe_link($valid));
+    $this->assertSame($valid, $hooks->safeLink($valid));
 
     // Build an object that refers to the just-removed Spanish translation.
     $spanish = $storage->loadUnchanged($id)->getTranslation('es');
     $spanish->removeTranslation('es');
 
-    $safe = _admin_audit_trail_menu_safe_link($spanish);
+    $safe = $hooks->safeLink($spanish);
     // The fallback is the valid default (English) translation.
     $this->assertSame('en', $safe->language()->getId());
     $this->assertSame('Audit Translated EN', $safe->getTitle());
@@ -141,6 +143,7 @@ class MenuLinkContentTranslationDeleteTest extends KernelTestBase {
   public function testRemovedTranslationsAreDetected(): void {
     $storage = $this->container->get('entity_type.manager')
       ->getStorage('menu_link_content');
+    $hooks = $this->container->get(AdminAuditTrailMenuHooks::class);
     $id = $this->createTranslatedLink()->id();
 
     // Previous version (original) still has both translations.
@@ -151,12 +154,12 @@ class MenuLinkContentTranslationDeleteTest extends KernelTestBase {
     $current->removeTranslation('es');
     $this->setOriginal($current, $original);
 
-    $this->assertSame(['es'], _admin_audit_trail_menu_removed_translations($current));
+    $this->assertSame(['es'], $hooks->removedTranslations($current));
 
     // A normal edit (no translation removed) reports nothing.
     $unchanged = $storage->loadUnchanged($id);
     $this->setOriginal($unchanged, $storage->loadUnchanged($id));
-    $this->assertSame([], _admin_audit_trail_menu_removed_translations($unchanged));
+    $this->assertSame([], $hooks->removedTranslations($unchanged));
   }
 
   /**

@@ -1,0 +1,5 @@
+
+services:
+  Drupal\admin_audit_trail_comment\Hook\AdminAuditTrailCommentHooks:
+    class: Drupal\admin_audit_trail_comment\Hook\AdminAuditTrailCommentHooks
+    autowire: true

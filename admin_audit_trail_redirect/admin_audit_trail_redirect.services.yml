@@ -1,0 +1,5 @@
+
+services:
+  Drupal\admin_audit_trail_redirect\Hook\AdminAuditTrailRedirectHooks:
+    class: Drupal\admin_audit_trail_redirect\Hook\AdminAuditTrailRedirectHooks
+    autowire: true
