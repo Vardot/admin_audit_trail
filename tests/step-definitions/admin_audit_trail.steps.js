@@ -1,30 +1,19 @@
 'use strict';
 
-/**
- * @file
- * Custom step definitions for the Admin Audit Trail module test suite.
- *
- * Mirrors the sibling Webship modules (webshare / webpage / webblog / webseo):
- * every step drives the site through the browser only - no Drush, no shell.
- * The audit log only records events triggered through a real web request
- * (admin_audit_trail_insert() returns early under PHP_SAPI === 'cli'), so the
- * scenarios provision users and content through Drupal's admin forms and then
- * assert the resulting `insert` / `update` / `delete` rows appear in the
- * Views-based report at /admin/reports/audit-trail.
- *
- * Navigation and waiting reuse webship-js's own helpers - gotoUrl (friendly
- * navigation errors) and waitForPageLoad (smart-settle: DOM ready, network
- * idle, no pending AJAX/timers) - instead of raw Playwright waits, and
- * failures are wrapped with friendly().
- */
+const { Given, Then, When, setDefaultTimeout } = require('@cucumber/cucumber');
 
-const { Given, Then, When } = require('@cucumber/cucumber');
+// The harness sets a 45s default step timeout. The first node-add form of a
+// run pays the cold-cache render of the moderation + paragraphs + comment
+// widgets, which legitimately exceeds that on a loaded shared runner.
+setDefaultTimeout(90 * 1000);
+
 const path = require('path');
+
 const {
   friendly,
   gotoUrl,
   waitForPageLoad,
-} = require('webship-js/tests/step-definitions/webship');
+} = require('@vardot/varbase-e2e/tests/step-definitions/varbase-e2e');
 
 /** Slugify a label into a Drupal machine name. */
 function machineName(label) {
@@ -41,6 +30,7 @@ function machineName(label) {
  * those identifiers keeps every run idempotent and the fresh event newest.
  */
 let __aatSeq = 0;
+
 function uniq() {
   __aatSeq += 1;
   return Date.now().toString(36).slice(-4) + __aatSeq;
@@ -59,36 +49,6 @@ async function attempt(body, message) {
     throw friendly(message, err);
   }
 }
-
-/**
- * Log in as a named test user defined in cucumber.js worldParameters.users.
- *
- * The Webmaster row is the site-install super-admin. Every other row is
- * provisioned by `Given I add testing users` (see below).
- *
- * Example #1: Given I am a logged in user with the "Webmaster" user
- * Example #2: Given I am a logged in user with the "Content editor" user
- * Example #3: Given I am a logged in user with the "Authenticated user" user
- */
-Given(/^I am a logged in user with( the)*( username)* "([^"]*)?"( user)?$/, async function (theCase, usernameCase, key, userCase) {
-  const users = this.parameters.users || {};
-  if (!(key in users)) {
-    throw new Error(`No user named "${key}" in cucumber.js worldParameters.users`);
-  }
-  const { username, password } = users[key];
-  if (!username || !password) {
-    throw new Error(`User "${key}" is missing username or password in worldParameters.users`);
-  }
-  await attempt(async () => {
-    await this.context.clearCookies();
-    await gotoUrl(this.page, `${this.parameters.launchUrl}/user/login`);
-    // Use Drupal's stable field IDs so the step is theme-independent.
-    await this.page.locator('#edit-name').fill(username);
-    await this.page.locator('#edit-pass').fill(password);
-    await this.page.locator('input[value="Log in"]').click();
-    await waitForPageLoad(this.page, this.minWaitTime && this.minWaitTime.page);
-  }, `Could not log in as "${key}"`);
-});
 
 /**
  * Provision every non-admin user from cucumber.js worldParameters.users via
@@ -208,12 +168,8 @@ When(/^(?:I |we )?filter the audit report by the "([^"]*)" type$/, async functio
   }, `Could not filter the audit report by the "${label}" type`);
 });
 
-/* -------------------------------------------------------------------------
- * Generic named-selector assertions (shared phrasing across Webship modules).
- * ---------------------------------------------------------------------- */
-
 /**
- * Resolve a webship-js named selector from the world registry, suggesting the
+ * Resolve a varbase-e2e named selector from the world registry, suggesting the
  * closest registered name on a typo instead of dumping the whole catalogue.
  */
 function resolveName(world, name) {
@@ -459,18 +415,6 @@ Then(/^(?:I |we )?should see the button "([^"]*)"$/, async function (text) {
   }, `Expected to find a button with text "${text}"`);
 });
 
-/* =======================================================================
- * Submodule event-generation steps.
- *
- * Each step performs the minimal admin-UI action that triggers one handler
- * submodule's event(s); the matching feature then opens the report and
- * asserts the resulting row (named selectors use Playwright's :has-text /
- * :text-is engine, web-first auto-wait). Forms are filled via stable Drupal
- * field IDs / data-drupal-selector attributes (which, unlike #id, survive
- * AJAX rebuilds) and submitted with a scoped op button.
- * ==================================================================== */
-
-/* user - create a user account (logs user / insert) */
 When(/^(?:I |we )?create a user named "([^"]*)"$/, async function (username) {
   const unique = `${username}_${uniq()}`;
   await attempt(async () => {
@@ -487,7 +431,6 @@ When(/^(?:I |we )?create a user named "([^"]*)"$/, async function (username) {
   }, `Could not create the user "${unique}"`);
 });
 
-/* user_roles - create a role (logs user_roles / role_created) */
 When(/^(?:I |we )?create a user role named "([^"]*)"$/, async function (label) {
   const id = machineName(label) + '_' + uniq();
   await attempt(async () => {
@@ -502,7 +445,6 @@ When(/^(?:I |we )?create a user role named "([^"]*)"$/, async function (label) {
   }, `Could not create the user role "${label}"`);
 });
 
-/* taxonomy - create a vocabulary and a term */
 When(/^(?:I |we )?create a taxonomy vocabulary named "([^"]*)"$/, async function (label) {
   const id = machineName(label) + '_' + uniq();
   await attempt(async () => {
@@ -551,7 +493,6 @@ When(/^(?:I |we )?create a taxonomy term named "([^"]*)"$/, async function (term
   }, `Could not create the taxonomy term "${term}"`);
 });
 
-/* multilingual setup - generic, reusable language + content-translation steps */
 When(/^(?:I |we )?add the "([^"]*)" language$/, async function (langcode) {
   await attempt(async () => {
     await gotoUrl(this.page, `${this.parameters.launchUrl}/admin/config/regional/language/add`);
@@ -589,7 +530,6 @@ When(/^(?:I |we )?make the "([^"]*)" "([^"]*)" entity translatable$/, async func
   }, `Could not make "${entityType} / ${bundle}" translatable`);
 });
 
-/* menu - create a menu and a menu link */
 When(/^(?:I |we )?create a menu named "([^"]*)"$/, async function (label) {
   const id = (machineName(label).replace(/_/g, '-').slice(0, 20) + '-' + uniq());
   await attempt(async () => {
@@ -626,7 +566,6 @@ When(/^(?:I |we )?add a menu link titled "([^"]*)" to the menu I created$/, asyn
   }, `Could not add the menu link "${title}"`);
 });
 
-/* menu link translations - generic add/delete of a menu link translation */
 When(/^(?:I |we )?add the "([^"]*)" translation titled "([^"]*)" to the menu link I created$/, async function (langcode, title) {
   await attempt(async () => {
     if (!this.auditMenuLinkId) throw new Error('No menu link created yet in this scenario.');
@@ -654,7 +593,6 @@ When(/^(?:I |we )?delete the "([^"]*)" translation of the menu link I created$/,
   }, `Could not delete the "${langcode}" translation of the menu link`);
 });
 
-/* block_content - create a custom (basic) block */
 When(/^(?:I |we )?create a custom block named "([^"]*)"$/, async function (label) {
   await attempt(async () => {
     await gotoUrl(this.page, `${this.parameters.launchUrl}/block/add/basic`);
@@ -667,7 +605,7 @@ When(/^(?:I |we )?create a custom block named "([^"]*)"$/, async function (label
   }, `Could not create the custom block "${label}"`);
 });
 
-/* comment - post a comment on the article created earlier in the scenario.
+/**
  * The comment body is a CKEditor5 field; set its data via the editor
  * instance (a raw textarea .value is overwritten by the editor on submit). */
 When(/^(?:I |we )?post the comment "([^"]*)" on the article I created$/, async function (body) {
@@ -693,7 +631,6 @@ When(/^(?:I |we )?post the comment "([^"]*)" on the article I created$/, async f
   }, `Could not post the comment "${body}"`);
 });
 
-/* redirect (contrib) - create a URL redirect */
 When(/^(?:I |we )?create a redirect from "([^"]*)" to "([^"]*)"$/, async function (from, to) {
   const uniqSuffix = uniq();
   await attempt(async () => {
@@ -708,7 +645,6 @@ When(/^(?:I |we )?create a redirect from "([^"]*)" to "([^"]*)"$/, async functio
   }, `Could not create the redirect ${from} -> ${to}`);
 });
 
-/* entityqueue (contrib) - create a (simple) entity queue */
 When(/^(?:I |we )?create an entity queue named "([^"]*)"$/, async function (label) {
   const id = machineName(label) + '_' + uniq();
   await attempt(async () => {
@@ -725,7 +661,6 @@ When(/^(?:I |we )?create an entity queue named "([^"]*)"$/, async function (labe
   }, `Could not create the entity queue "${label}"`);
 });
 
-/* group (contrib) - create a Team group */
 When(/^(?:I |we )?create a group named "([^"]*)"$/, async function (label) {
   await attempt(async () => {
     await gotoUrl(this.page, `${this.parameters.launchUrl}/group/add/team`);
@@ -738,7 +673,6 @@ When(/^(?:I |we )?create a group named "([^"]*)"$/, async function (label) {
   }, `Could not create the group "${label}"`);
 });
 
-/* paragraphs (contrib) - create an article carrying a paragraph */
 When(/^(?:I |we )?create an article with a paragraph titled "([^"]*)"$/, async function (title) {
   await attempt(async () => {
     await gotoUrl(this.page, `${this.parameters.launchUrl}/node/add/article`);
@@ -761,7 +695,7 @@ When(/^(?:I |we )?create an article with a paragraph titled "([^"]*)"$/, async f
   }, `Could not create an article with a paragraph titled "${title}"`);
 });
 
-/* media + file - create an Image media item. Uploading the image creates a
+/**
  * managed file (logs file / insert); saving the media logs media / insert.
  * The Alt field id gets an AJAX suffix, so it is addressed by its stable
  * data-drupal-selector. */
@@ -782,7 +716,6 @@ When(/^(?:I |we )?create an image media item named "([^"]*)"$/, async function (
   }, `Could not create the image media item "${name}"`);
 });
 
-/* auth - logout, failed login, password-reset request */
 When(/^(?:I |we )?log out$/, async function () {
   await attempt(async () => {
     await gotoUrl(this.page, `${this.parameters.launchUrl}/user/logout`);

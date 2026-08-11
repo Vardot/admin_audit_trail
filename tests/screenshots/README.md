@@ -1,1 +1,1 @@
-# webship-js failure screenshots
+# varbase-e2e failure screenshots

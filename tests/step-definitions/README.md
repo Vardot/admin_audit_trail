@@ -1,1 +1,1 @@
-# webship-js custom step definitions
+# varbase-e2e custom step definitions

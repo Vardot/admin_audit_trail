@@ -1,0 +1,9 @@
+langcode: en
+status: true
+dependencies: {  }
+id: test_section
+label: 'Test section'
+icon_uuid: null
+icon_default: null
+description: 'Sections are used for the Admin Audit Trail automated tests.'
+behavior_plugins: {  }

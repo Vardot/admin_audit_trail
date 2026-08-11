@@ -1,0 +1,23 @@
+name: 'Admin Audit Trail Test'
+description: 'Provisions the fixtures the Admin Audit Trail automated browser tests need: the Article and Basic page content types with comments (via the core recipes), the Editorial workflow on articles, the Image media type, and a Test section paragraph type with a Sections field on articles. The module and its handler submodules are enabled by the CI job before this recipe runs; the Team group type is created directly because the Group module cannot build its membership field in a config-import context.'
+type: 'Testing'
+recipes:
+  - core/recipes/article_content_type
+  - core/recipes/page_content_type
+  - core/recipes/article_comment
+  - core/recipes/editorial_workflow
+  - core/recipes/image_media_type
+install:
+  - paragraphs
+config:
+  strict: false
+  actions:
+    workflows.workflow.editorial:
+      addNodeTypes:
+        - article
+    core.entity_form_display.node.article.default:
+      setComponents:
+        - name: field_sections
+          options:
+            type: paragraphs
+            weight: 50

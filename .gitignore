@@ -13,7 +13,7 @@ yarn-error.log
 .gitlab-ci-local/
 /public/
 
-# webship-js generated artefacts (keep the tracked READMEs / structure)
+# varbase-e2e generated artefacts (keep the tracked READMEs / structure)
 tests/reports/**/*.json
 tests/reports/**/*.html
 tests/reports/**/*.pdf

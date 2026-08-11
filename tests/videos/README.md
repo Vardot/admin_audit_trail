@@ -1,1 +1,1 @@
-# webship-js failure videos
+# varbase-e2e failure videos

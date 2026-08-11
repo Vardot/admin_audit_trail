@@ -1,20 +1,20 @@
 # Pipeline for `gitlab-ci-local` (https://github.com/firecow/gitlab-ci-local).
 #
 # The real .gitlab-ci.yml `include:`s the drupalci templates and runs the
-# webship-js browser job inside the drupalci PHP-Apache image with a MySQL
+# varbase-e2e browser job inside the drupalci PHP-Apache image with a MySQL
 # service - none of which gitlab-ci-local can reproduce ($_GITLAB_TEMPLATES_REPO
 # is not a public path). This file reproduces the same work in a self-contained
 # way so the whole thing can be exercised locally before pushing:
 #
 #   validate : cspell + eslint linters (Node 20)
 #   pages    : MkDocs --strict build
-#   test     : webship-js BDD suite against a freshly built Drupal 11 site
+#   test     : varbase-e2e BDD suite against a freshly built Drupal 11 site
 #              (MariaDB service + `drush runserver`, the module added via a
 #              Composer path repository, all handler submodules + fixtures)
 #
 # Usage:
 #   gitlab-ci-local --file .gitlab-ci-local.yml                 # all jobs
-#   gitlab-ci-local --file .gitlab-ci-local.yml webship-js-test # just the suite
+#   gitlab-ci-local --file .gitlab-ci-local.yml varbase-e2e-test # just the suite
 #   gitlab-ci-local --file .gitlab-ci-local.yml eslint          # one linter
 
 stages:
@@ -62,12 +62,12 @@ pages:
       - public
   allow_failure: false
 
-# Self-contained webship-js browser job. One container holds PHP (to build and
+# Self-contained varbase-e2e browser job. One container holds PHP (to build and
 # serve the site over SQLite via `drush runserver`) and Node (to run the
 # Playwright + Cucumber suite). The module under test is pulled into the site
 # through a Composer path repository pointing at the checked-out repo, so the
 # exact working-tree code is what gets exercised.
-webship-js-test:
+varbase-e2e-test:
   stage: test
   image: node:20-bookworm
   # MariaDB service (Drupal 11 needs SQLite >= 3.45, newer than Debian ships,
@@ -80,7 +80,7 @@ webship-js-test:
     MARIADB_DATABASE: "drupal"
     LAUNCH_URL: "http://127.0.0.1:8888"
     BROWSER: "chromium"
-    WEBSHIP_REPORT_DISABLE: "1"
+    VARBASE_E2E_REPORT_DISABLE: "1"
     SITE: "/app"
     DB_URL: "mysql://root@database:3306/drupal"
     # Let the PHP built-in server (drush runserver) handle the concurrent
@@ -100,7 +100,7 @@ webship-js-test:
     - for i in $(seq 1 60); do mysqladmin --host=database --user=root ping >/dev/null 2>&1 && break; sleep 2; done
     - mysqladmin --host=database --user=root ping
     - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-    # --- Node test-runner deps (webship-js + cucumber + playwright) --------
+    # --- Node test-runner deps (varbase-e2e + cucumber + playwright) --------
     - cd "$CI_PROJECT_DIR"
     - corepack enable && yarn install
     - ./node_modules/.bin/playwright install --with-deps chromium
@@ -137,7 +137,7 @@ webship-js-test:
   script:
     - cd "$CI_PROJECT_DIR"
     - ./node_modules/.bin/cucumber-js --config cucumber.js --tags "not @wip"
-    - node ./node_modules/webship-js/bin/generate-reports.js --json tests/reports/cucumber_report.json --out tests/reports/cucumber_report.html || true
+    - node ./node_modules/@vardot/varbase-e2e/bin/generate-reports.js --json tests/reports/cucumber_report.json --out tests/reports/cucumber_report.html || true
   artifacts:
     when: always
     paths:

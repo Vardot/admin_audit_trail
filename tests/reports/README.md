@@ -1,1 +1,1 @@
-# webship-js cucumber reports (JSON / HTML / PDF)
+# varbase-e2e cucumber reports (JSON / HTML / PDF)

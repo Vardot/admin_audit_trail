@@ -1,1 +1,1 @@
-# webship-js features (Drupal Standard profile)
+# varbase-e2e features (Drupal Standard profile)

@@ -28,6 +28,7 @@ class ReportLibraryAttachTest extends KernelTestBase {
   protected static $modules = [
     'system',
     'user',
+    'filter',
     'views',
     'admin_audit_trail',
   ];

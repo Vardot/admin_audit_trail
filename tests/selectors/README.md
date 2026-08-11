@@ -1,1 +1,1 @@
-# webship-js selectors
+# varbase-e2e selectors

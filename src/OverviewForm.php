@@ -78,7 +78,7 @@ class OverviewForm extends FormBase implements ContainerInjectionInterface {
    * @var array
    *  The form filters
    */
-  private $filters = [];
+  protected $filters = [];
 
   /**
    * Get User data.

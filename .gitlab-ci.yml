@@ -4,11 +4,11 @@
 # Two halves:
 #   1. The standard Drupal CI validation jobs (composer-lint, cspell, eslint,
 #      phpcs, phpstan, phpunit) provided by the drupalci templates.
-#   2. A webship-js BDD browser-test job (Playwright + Cucumber-js) that runs
+#   2. A varbase-e2e BDD browser-test job (Playwright + Cucumber-js) that runs
 #      the `tests/features/drupal/**` suite against a freshly installed
 #      Drupal Standard site with the module + its handler submodules enabled.
 #
-# The webship-js suite drives the site entirely through the browser. The first
+# The varbase-e2e suite drives the site entirely through the browser. The first
 # feature (01-01-01-users-login) logs in as the Webmaster and provisions the
 # per-role testing users, so the before_script only has to build the site,
 # enable the modules and install Node + Playwright.
@@ -62,15 +62,15 @@ phpunit:
     - apt-get install -y nodejs
     - node --version && npm --version
     - 'test -f .yarnrc.yml || echo "nodeLinker: node-modules" > .yarnrc.yml'
-    # Back up cucumber.js - webship-js's postinstall can clobber it under yarn 4.
+    # Back up cucumber.js - varbase-e2e's postinstall can clobber it under yarn 4.
     - cp cucumber.js .cucumber.js.bak
     - corepack enable
     - yarn install
     - cp .cucumber.js.bak cucumber.js && rm .cucumber.js.bak
     - ./node_modules/.bin/playwright install --with-deps chromium
 
-# = webship-js BDD - Drupal Standard profile =
-webship-js-test:
+# = varbase-e2e BDD - Drupal Standard profile =
+varbase-e2e-test:
   extends: .testing-job-base
   needs: [composer]
   # Override the parent's services - we only need the database. Playwright
@@ -101,12 +101,12 @@ webship-js-test:
     # Make the tests/modules/ test helper discoverable by drush en.
     - chmod 644 $CI_PROJECT_DIR/$_WEB_ROOT/sites/default/settings.php
     - echo '$settings["extension_discovery_scan_tests"] = TRUE;' >> $CI_PROJECT_DIR/$_WEB_ROOT/sites/default/settings.php
-    # Core modules the event scenarios drive through the UI.
+    # Modules are enabled by drush: both Group and this module import parts of
+    # their config/install imperatively, which the recipe runner's config-import
+    # context skips (Group's membership field, the audit report view).
     - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT en -y
         media media_library workflows content_moderation field_ui
         redirect entityqueue paragraphs group language content_translation
-    # Enable the module plus EVERY handler submodule so all event types are
-    # recorded for the per-submodule scenarios to assert.
     - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT en -y
         admin_audit_trail
         admin_audit_trail_auth
@@ -126,9 +126,15 @@ webship-js-test:
         admin_audit_trail_user_roles
         admin_audit_trail_workflows
         admin_audit_trail_test
-    # Provision the fixtures each submodule scenario needs (image media type,
-    # Editorial workflow on article, a group type, a paragraph type + field).
-    - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT scr $CI_PROJECT_DIR/tests/fixtures/provision-fixtures.php
+    # Provision the fixtures through the test recipe: the content types with
+    # comments (core recipes), the Editorial workflow on articles, the Image
+    # media type, the group/paragraph fixtures, and the module with every
+    # handler submodule enabled.
+    - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT recipe $CI_PROJECT_DIR/tests/recipes/admin_audit_trail_test -y
+    # The Team group type cannot ship as recipe config: Group's post-save
+    # handler builds the membership field imperatively and crashes during a
+    # config-import (sync) context, so it is the one entity created directly.
+    - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT php:eval 'if (!\Drupal::entityTypeManager()->getStorage("group_type")->load("team")) { \Drupal::entityTypeManager()->getStorage("group_type")->create(["id" => "team", "label" => "Team", "creator_membership" => TRUE, "creator_wizard" => FALSE, "new_revision" => FALSE])->save(); }'
     # Multilingual environment for the menu link translation scenario (#3343561):
     # a Spanish language and translatable custom menu links. Enabling content
     # translation must be followed by a cache rebuild so the per-language
@@ -138,12 +144,12 @@ webship-js-test:
     - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT cache:rebuild
     - !reference [.fragments, node_playwright]
   script:
-    # cucumber.js loads only `tests/features/drupal/**`. Disable webship-js's
+    # cucumber.js loads only `tests/features/drupal/**`. Disable varbase-e2e's
     # auto HTML hook (it cannot await PDF generation from `process.on('exit')`)
     # and run `generate-reports` explicitly after cucumber-js so both HTML and
     # PDF land next to the JSON in `tests/reports/`.
-    - WEBSHIP_REPORT_DISABLE=1 ./node_modules/.bin/cucumber-js --config cucumber.js --tags "not @wip"
-    - node ./node_modules/webship-js/bin/generate-reports.js
+    - VARBASE_E2E_REPORT_DISABLE=1 ./node_modules/.bin/cucumber-js --config cucumber.js --tags "not @wip"
+    - node ./node_modules/@vardot/varbase-e2e/bin/generate-reports.js
         --json tests/reports/cucumber_report.json
         --out  tests/reports/cucumber_report.html
         --format all
