@@ -17,6 +17,14 @@ function admin_audit_trail_workflows_admin_audit_trail_handlers() {
 }
 
 /**
+ * Implements hook_node_presave().
+ */
+#[LegacyHook]
+function admin_audit_trail_workflows_node_presave($node) {
+  \Drupal::service(AdminAuditTrailWorkflowsHooks::class)->nodePresave($node);
+}
+
+/**
  * Implements hook_node_insert().
  */
 #[LegacyHook]

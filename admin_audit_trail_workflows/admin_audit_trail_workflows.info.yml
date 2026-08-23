@@ -6,3 +6,4 @@ package: Administration
 dependencies:
   - admin_audit_trail:admin_audit_trail
   - drupal:workflows
+  - drupal:content_moderation
