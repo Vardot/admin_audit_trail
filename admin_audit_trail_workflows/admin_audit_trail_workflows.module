@@ -5,8 +5,9 @@
  * Logs workflows commands in the admin_audit_trail module.
  */
 
-use Drupal\Core\Hook\Attribute\LegacyHook;
 use Drupal\admin_audit_trail_workflows\Hook\AdminAuditTrailWorkflowsHooks;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Hook\Attribute\LegacyHook;
 
 /**
  * Implements hook_admin_audit_trail_handlers().
@@ -17,25 +18,25 @@ function admin_audit_trail_workflows_admin_audit_trail_handlers() {
 }
 
 /**
- * Implements hook_node_presave().
+ * Implements hook_entity_presave().
  */
 #[LegacyHook]
-function admin_audit_trail_workflows_node_presave($node) {
-  \Drupal::service(AdminAuditTrailWorkflowsHooks::class)->nodePresave($node);
+function admin_audit_trail_workflows_entity_presave(EntityInterface $entity) {
+  \Drupal::service(AdminAuditTrailWorkflowsHooks::class)->entityPresave($entity);
 }
 
 /**
- * Implements hook_node_insert().
+ * Implements hook_entity_insert().
  */
 #[LegacyHook]
-function admin_audit_trail_workflows_node_insert($node) {
-  \Drupal::service(AdminAuditTrailWorkflowsHooks::class)->nodeInsert($node);
+function admin_audit_trail_workflows_entity_insert(EntityInterface $entity) {
+  \Drupal::service(AdminAuditTrailWorkflowsHooks::class)->entityInsert($entity);
 }
 
 /**
- * Implements hook_node_update().
+ * Implements hook_entity_update().
  */
 #[LegacyHook]
-function admin_audit_trail_workflows_node_update($node) {
-  \Drupal::service(AdminAuditTrailWorkflowsHooks::class)->nodeUpdate($node);
+function admin_audit_trail_workflows_entity_update(EntityInterface $entity) {
+  \Drupal::service(AdminAuditTrailWorkflowsHooks::class)->entityUpdate($entity);
 }
