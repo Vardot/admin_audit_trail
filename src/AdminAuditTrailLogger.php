@@ -71,7 +71,7 @@ class AdminAuditTrailLogger {
    *     Reference to alphabetical id. Optional.
    */
   public function insert(array &$log): void {
-    if (PHP_SAPI == 'cli') {
+    if ($this->isCliRequest()) {
       // Ignore CLI requests.
       return;
     }
@@ -99,6 +99,13 @@ class AdminAuditTrailLogger {
 
     // Allow the altering of the log array.
     $this->moduleHandler->invokeAll('admin_audit_trail_log_alter', ['log' => &$log]);
+
+    // An implementation may set 'skip_db' to prevent the database write -
+    // e.g. the Logger submodule's PSR-3-only mode, which has already
+    // forwarded the record during the alter above.
+    if (!empty($log['skip_db'])) {
+      return;
+    }
 
     $fields = [
       'type' => $log['type'],
@@ -128,6 +135,16 @@ class AdminAuditTrailLogger {
         ->execute();
     }
     Cache::invalidateTags(['config:views.view.admin_audit_trail']);
+  }
+
+  /**
+   * Whether the current request runs under the CLI.
+   *
+   * Separated out so tests can exercise insert() (PHPUnit itself runs under
+   * the CLI SAPI).
+   */
+  protected function isCliRequest(): bool {
+    return PHP_SAPI === 'cli';
   }
 
   /**

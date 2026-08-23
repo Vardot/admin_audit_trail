@@ -1,0 +1,3 @@
+mode: hybrid
+channel: audit_trail
+severity_map: {  }

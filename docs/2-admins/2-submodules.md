@@ -544,6 +544,63 @@ logged.
 
 ---
 
+## Integration
+
+### Admin Audit Trail Logger
+
+**Machine name**: `admin_audit_trail_logger`
+
+**Purpose**: Forwards every audit trail event to the Drupal PSR-3 logger, so
+any active logging backend receives it: Database Logging (dblog), Syslog
+(core), Monolog (contrib), or a custom `LoggerInterface` implementation.
+This is the bridge to SIEM and log-aggregation pipelines.
+
+**What it does**:
+- ✓ Forwards each audit record as a structured PSR-3 message with context
+  placeholders (`type`, `operation`, `description`, `uid`, `ip`, `path`)
+- ✓ Hybrid mode (default): forwards AND keeps storing in the database report
+- ✓ PSR-3-only mode: forwards and skips the database write (the report at
+  `/admin/reports/audit-trail` receives no new entries)
+- ✓ Configurable channel name (default `audit_trail`)
+- ✓ Per-operation severity via the `severity_map` setting
+
+**When to enable**:
+- Audit events must reach syslog / Monolog / a SIEM
+- Central log aggregation across environments
+- The database report is not wanted (PSR-3-only mode)
+
+**Dependencies**: None (a logging backend such as dblog or syslog makes the
+forwarded events visible)
+
+**Configuration**: `/admin/config/development/audit-trail/logger` sets the
+mode and the channel. Severities are configured per operation in
+`settings.php` (exact match on the operation, with a `default` fallback;
+invalid level names degrade to `notice`):
+
+```php
+$config['admin_audit_trail_logger.settings']['severity_map'] = [
+  'default' => 'notice',
+  'delete' => 'warning',
+  'fail' => 'alert',
+];
+```
+
+**Log examples** (as seen in dblog with type `audit_trail`):
+```
+[node] insert: article: My Article (uid=3, ip=203.0.113.7, path=node/add/article)
+[user] login: Session opened (uid=3, ip=203.0.113.7, path=user/login)
+```
+
+**Performance impact**: Low (one logger call per audit event)
+
+**Note**: Implemented with the object-oriented hook pattern
+(`src/Hook/AdminAuditTrailLoggerHooks.php` with a `#[Hook]` attribute) plus a
+`#[LegacyHook]` stub in the `.module` file for older cores. Like the parent
+module, events are only captured during web requests, not from the command
+line.
+
+---
+
 ## Sub-module Selection Guide
 
 ### By Site Type

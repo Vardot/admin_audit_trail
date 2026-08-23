@@ -1,0 +1,6 @@
+services:
+  Drupal\admin_audit_trail_logger\Hook\AdminAuditTrailLoggerHooks:
+    class: Drupal\admin_audit_trail_logger\Hook\AdminAuditTrailLoggerHooks
+    arguments:
+      - '@config.factory'
+      - '@logger.factory'

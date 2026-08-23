@@ -1,0 +1,6 @@
+admin_audit_trail_logger.settings:
+  title: "Logger"
+  parent: admin_audit_trail.settings
+  description: "Configure PSR-3 logger integration for audit trail events."
+  route_name: admin_audit_trail_logger.settings
+  weight: 10

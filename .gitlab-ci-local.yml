@@ -119,8 +119,8 @@ varbase-e2e-test:
     # Make the tests/modules/ test helper discoverable by drush en.
     - chmod 644 web/sites/default/settings.php
     - echo '$settings["extension_discovery_scan_tests"] = TRUE;' >> web/sites/default/settings.php
-    - vendor/bin/drush en -y media media_library workflows content_moderation field_ui redirect entityqueue paragraphs group language content_translation
-    - vendor/bin/drush en -y admin_audit_trail admin_audit_trail_auth admin_audit_trail_block_content admin_audit_trail_comment admin_audit_trail_config admin_audit_trail_entityqueue admin_audit_trail_file admin_audit_trail_group admin_audit_trail_media admin_audit_trail_menu admin_audit_trail_node admin_audit_trail_paragraphs admin_audit_trail_redirect admin_audit_trail_taxonomy admin_audit_trail_user admin_audit_trail_user_roles admin_audit_trail_workflows admin_audit_trail_test
+    - vendor/bin/drush en -y media media_library workflows content_moderation field_ui dblog redirect entityqueue paragraphs group language content_translation
+    - vendor/bin/drush en -y admin_audit_trail admin_audit_trail_auth admin_audit_trail_block_content admin_audit_trail_comment admin_audit_trail_config admin_audit_trail_entityqueue admin_audit_trail_file admin_audit_trail_group admin_audit_trail_media admin_audit_trail_menu admin_audit_trail_node admin_audit_trail_paragraphs admin_audit_trail_redirect admin_audit_trail_taxonomy admin_audit_trail_user admin_audit_trail_user_roles admin_audit_trail_workflows admin_audit_trail_logger admin_audit_trail_test
     # Provision the fixtures through the test recipe, mirroring the canonical
     # .gitlab-ci.yml (#3616117 replaced the provision-fixtures.php script with
     # the tests/recipes/admin_audit_trail_test recipe).

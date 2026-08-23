@@ -1,0 +1,20 @@
+<?php
+
+/**
+ * @file
+ * Forwards Admin Audit Trail events to the Drupal PSR-3 logger.
+ *
+ * Works with any active logger backend: syslog (core), Monolog (contrib),
+ * or any custom LoggerInterface implementation.
+ */
+
+use Drupal\admin_audit_trail_logger\Hook\AdminAuditTrailLoggerHooks;
+use Drupal\Core\Hook\Attribute\LegacyHook;
+
+/**
+ * Implements hook_admin_audit_trail_log_alter().
+ */
+#[LegacyHook]
+function admin_audit_trail_logger_admin_audit_trail_log_alter(array &$log): void {
+  \Drupal::service(AdminAuditTrailLoggerHooks::class)->logAlter($log);
+}

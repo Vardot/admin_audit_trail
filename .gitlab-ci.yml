@@ -105,7 +105,7 @@ varbase-e2e-test:
     # their config/install imperatively, which the recipe runner's config-import
     # context skips (Group's membership field, the audit report view).
     - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT en -y
-        media media_library workflows content_moderation field_ui
+        media media_library workflows content_moderation field_ui dblog
         redirect entityqueue paragraphs group language content_translation
     - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT en -y
         admin_audit_trail
@@ -125,6 +125,7 @@ varbase-e2e-test:
         admin_audit_trail_user
         admin_audit_trail_user_roles
         admin_audit_trail_workflows
+        admin_audit_trail_logger
         admin_audit_trail_test
     # Provision the fixtures through the test recipe: the content types with
     # comments (core recipes), the Editorial workflow on articles, the Image

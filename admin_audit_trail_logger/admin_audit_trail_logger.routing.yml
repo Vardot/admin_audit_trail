@@ -1,0 +1,7 @@
+admin_audit_trail_logger.settings:
+  path: '/admin/config/development/audit-trail/logger'
+  defaults:
+    _form: '\Drupal\admin_audit_trail_logger\Form\SettingsForm'
+    _title: 'Audit trail logger settings'
+  requirements:
+    _permission: 'configure admin audit trail'

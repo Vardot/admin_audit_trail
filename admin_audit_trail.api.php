@@ -46,6 +46,11 @@ function hook_admin_audit_trail_handlers() {
  *     Reference to numeric id. Optional.
  *   - {string} ref_char
  *     Reference to alphabetical id. Optional.
+ *   - {bool} skip_db
+ *     Set to TRUE to prevent the record from being written to the database.
+ *     The record has still been dispatched to every alter implementation, so
+ *     a forwarding module (e.g. Admin Audit Trail Logger) has already
+ *     processed it. Optional.
  */
 function hook_admin_audit_trail_log_alter(array &$log) {
 }
