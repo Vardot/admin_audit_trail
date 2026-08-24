@@ -43,6 +43,8 @@ class AdminAuditTrailHooks {
         $output .= '<dl>';
         $output .= '<dt>' . $this->t('Admin Audit Trail User Authentication') . '</dt>';
         $output .= '<dd>' . $this->t('Using this submodule you can logs user authentication (login logout and request password). This module requires: Admin Audit Trail.') . '</dd>';
+        $output .= '<dt>' . $this->t('Admin Audit Trail OpenID Connect') . '</dt>';
+        $output .= '<dd>' . $this->t('Using this submodule you can log Active Directory (Windows AAD) logins made through OpenID Connect. This module requires: Admin Audit Trail User Authentication and OpenID Connect Windows AAD.') . '</dd>';
         $output .= '</dl>';
         return $output;
     }

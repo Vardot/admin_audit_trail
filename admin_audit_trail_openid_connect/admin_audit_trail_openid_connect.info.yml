@@ -1,0 +1,9 @@
+name: "Admin Audit Trail OpenID Connect"
+description: "Logs OpenID Connect (Active Directory) login events."
+type: module
+core_version_requirement: ^10.1 || ^11 || ^12
+package: Administration
+dependencies:
+  - admin_audit_trail:admin_audit_trail
+  - admin_audit_trail:admin_audit_trail_auth
+  - openid_connect_windows_aad:openid_connect_windows_aad

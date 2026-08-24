@@ -51,6 +51,37 @@ Description: Password reset requested for user: john.doe
 
 ---
 
+### Admin Audit Trail OpenID Connect
+
+**Machine name**: `admin_audit_trail_openid_connect`
+
+**Purpose**: Tracks Active Directory (Windows Azure AD) logins performed
+through OpenID Connect, which the User Authentication sub-module does not see
+(they bypass the regular Drupal login form).
+
+**What it logs**:
+- ✓ Successful logins through a Windows AAD OpenID Connect client, as an
+  `authentication / ad_login` event with the user's display name and id
+
+Logins through other OpenID Connect clients are ignored by this sub-module.
+
+**When to enable**:
+- The site uses SSO through Azure Active Directory (Entra ID)
+- Security monitoring must cover federated logins, not only local ones
+
+**Dependencies**: Admin Audit Trail User Authentication, OpenID Connect
+Windows AAD (`openid_connect_windows_aad`)
+
+**Log examples**:
+```
+Operation: ad_login
+Description: Jane Doe (uid 42) logged in via Active Directory
+```
+
+**Performance impact**: Low (one lookup per OpenID Connect login)
+
+---
+
 ### Admin Audit Trail User
 
 **Machine name**: `admin_audit_trail_user`

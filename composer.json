@@ -21,12 +21,14 @@
   "require-dev": {
     "drupal/entityqueue": "^1.7",
     "drupal/group": "^3.3",
+    "drupal/openid_connect_windows_aad": "^2.0",
     "drupal/paragraphs": "^1.19",
     "drupal/redirect": "^1.11"
   },
   "suggest": {
     "drupal/entityqueue": "Enable admin_audit_trail_entityqueue to log entity queue and subqueue events.",
     "drupal/group": "Enable admin_audit_trail_group to log group events.",
+    "drupal/openid_connect_windows_aad": "Enable admin_audit_trail_openid_connect to log Active Directory (Windows AAD) logins.",
     "drupal/paragraphs": "Enable admin_audit_trail_paragraphs to log paragraph events.",
     "drupal/redirect": "Enable admin_audit_trail_redirect to log URL redirect events."
   }

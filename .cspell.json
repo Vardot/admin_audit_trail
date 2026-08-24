@@ -15,6 +15,7 @@
     ".*ignore"
   ],
   "words": [
+    "AAD",
     "admin",
     "Anonymization",
     "anonymization",
@@ -29,6 +30,7 @@
     "Drush",
     "Entityqueue",
     "entityqueue",
+    "externalauth",
     "fastcgi",
     "heroslider",
     "hookname",
@@ -53,6 +55,7 @@
     "Natshah",
     "oembed",
     "Olivero",
+    "openid",
     "phpcbf",
     "phpcs",
     "phpunit",
@@ -86,6 +89,7 @@
     "UNIXTIME",
     "unmoderated",
     "updatedb",
+    "userinfo",
     "Varbase",
     "varbase",
     "Varbase E2E",

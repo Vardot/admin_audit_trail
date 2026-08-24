@@ -1,0 +1,5 @@
+services:
+  Drupal\admin_audit_trail_openid_connect\Hook\AdminAuditTrailOpenidConnectHooks:
+    class: Drupal\admin_audit_trail_openid_connect\Hook\AdminAuditTrailOpenidConnectHooks
+    arguments:
+      - '@entity_type.manager'

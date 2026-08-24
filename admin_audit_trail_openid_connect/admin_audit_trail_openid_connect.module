@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * @file
+ * Logs OpenID Connect (Active Directory) logins in admin_audit_trail.
+ */
+
+use Drupal\admin_audit_trail_openid_connect\Hook\AdminAuditTrailOpenidConnectHooks;
+use Drupal\Core\Hook\Attribute\LegacyHook;
+use Drupal\user\UserInterface;
+
+/**
+ * Implements hook_openid_connect_post_authorize().
+ */
+#[LegacyHook]
+function admin_audit_trail_openid_connect_openid_connect_post_authorize(UserInterface $account, array $context) {
+  \Drupal::service(AdminAuditTrailOpenidConnectHooks::class)->postAuthorize($account, $context);
+}
