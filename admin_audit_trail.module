@@ -8,6 +8,7 @@
 use Drupal\Core\Hook\Attribute\LegacyHook;
 use Drupal\admin_audit_trail\AdminAuditTrailLogger;
 use Drupal\admin_audit_trail\Hook\AdminAuditTrailHooks;
+use Drupal\admin_audit_trail\Hook\AdminAuditTrailViewsHooks;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\views\ViewExecutable;
@@ -117,6 +118,14 @@ function admin_audit_trail_safe_truncate($value, $max_length = 255) {
 #[LegacyHook]
 function admin_audit_trail_cron() {
   \Drupal::service(AdminAuditTrailHooks::class)->cron();
+}
+
+/**
+ * Implements hook_views_data().
+ */
+#[LegacyHook]
+function admin_audit_trail_views_data() {
+  return \Drupal::service(AdminAuditTrailViewsHooks::class)->viewsData();
 }
 
 /**

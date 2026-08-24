@@ -95,6 +95,32 @@ function admin_audit_trail_update_10001() {
 }
 
 /**
+ * Implements hook_install().
+ *
+ * The report view ships as optional configuration, which Drupal installs only
+ * when Views is already enabled at that moment. Enabling both in one command,
+ * or adding Views afterwards, otherwise leaves the site without the report and
+ * no update hook to repair it: a fresh install stamps the schema at the newest
+ * update, so the repair update never runs (issue #3618801).
+ */
+function admin_audit_trail_install($is_syncing) {
+  if (!$is_syncing) {
+    AdminAuditTrailReportView::ensure();
+  }
+}
+
+/**
+ * Implements hook_modules_installed().
+ *
+ * Creates the report view when Views is enabled after this module.
+ */
+function admin_audit_trail_modules_installed(array $modules, $is_syncing) {
+  if (!$is_syncing && in_array('views', $modules, TRUE)) {
+    AdminAuditTrailReportView::ensure();
+  }
+}
+
+/**
  * Install the Admin Audit Trail view.
  */
 function admin_audit_trail_update_10002() {
@@ -105,5 +131,16 @@ function admin_audit_trail_update_10002() {
  * Restore the report view on sites where an install-profile skipped it.
  */
 function admin_audit_trail_update_10003() {
+  return AdminAuditTrailReportView::ensure();
+}
+
+/**
+ * Restore the report view on sites installed without it.
+ *
+ * A fresh install stamps the schema at the newest update, so a site installed
+ * while Views was enabled in the same operation kept a missing report view
+ * with no update left to run (issue #3618801).
+ */
+function admin_audit_trail_update_10004() {
   return AdminAuditTrailReportView::ensure();
 }

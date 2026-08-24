@@ -7,3 +7,7 @@ services:
   Drupal\admin_audit_trail\Hook\AdminAuditTrailHooks:
     class: Drupal\admin_audit_trail\Hook\AdminAuditTrailHooks
     autowire: true
+
+  Drupal\admin_audit_trail\Hook\AdminAuditTrailViewsHooks:
+    class: Drupal\admin_audit_trail\Hook\AdminAuditTrailViewsHooks
+    autowire: true
