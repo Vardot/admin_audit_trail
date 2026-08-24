@@ -49,6 +49,13 @@ final class SettingsForm extends ConfigFormBase {
       '#type' => 'select',
     ];
 
+    $form['log_cli'] = [
+      '#default_value' => $config->get('log_cli'),
+      '#description' => $this->t('Also record events triggered from the command line (Drush, CLI cron). CLI records show "CLI" in the IP column and the command line in the Path column.'),
+      '#title' => $this->t('Log CLI events'),
+      '#type' => 'checkbox',
+    ];
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -59,6 +66,7 @@ final class SettingsForm extends ConfigFormBase {
     $this->config('admin_audit_trail.settings')
       ->set('filter_expanded', $form_state->getValue('filter_expanded'))
       ->set('admin_audit_trail_row_limit', $form_state->getValue('admin_audit_trail_row_limit'))
+      ->set('log_cli', (bool) $form_state->getValue('log_cli'))
       ->save();
 
     parent::submitForm($form, $form_state);

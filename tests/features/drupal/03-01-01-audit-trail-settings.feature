@@ -12,7 +12,19 @@ Feature: Admin Audit Trail - the settings form
     Then the "settings form" element should be visible
     And the "settings filter expanded" element should be visible
     And the "settings row limit" element should be visible
+    And the "settings log cli" element should be visible
+    And I should see "Log CLI events"
     And I should see the button "Save configuration"
+
+  Scenario: Enabling CLI logging persists
+    When I check "Log CLI events"
+    And I press "Save configuration"
+    Then I should see "The configuration options have been saved."
+    When I am on "/admin/config/development/audit-trail/settings"
+    Then the "settings log cli" element should be visible
+    When I uncheck "Log CLI events"
+    And I press "Save configuration"
+    Then I should see "The configuration options have been saved."
 
   Scenario: Saving the settings reports success
     When I check "Filters Expanded"

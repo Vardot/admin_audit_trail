@@ -9,3 +9,6 @@ admin_audit_trail.settings:
     admin_audit_trail_row_limit:
       type: integer
       label: 'The maximum number of messages to keep in the audit trail log.'
+    log_cli:
+      type: boolean
+      label: 'Log events triggered from the command line (CLI).'

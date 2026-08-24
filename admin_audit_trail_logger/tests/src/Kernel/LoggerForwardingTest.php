@@ -57,6 +57,7 @@ class LoggerForwardingTest extends KernelTestBase {
       $this->container->get('request_stack'),
       $this->container->get('database'),
       $this->container->get('module_handler'),
+      $this->container->get('config.factory'),
     ));
   }
 

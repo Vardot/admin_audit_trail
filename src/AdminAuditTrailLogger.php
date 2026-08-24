@@ -7,6 +7,7 @@ namespace Drupal\admin_audit_trail;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -44,6 +45,8 @@ class AdminAuditTrailLogger {
    *   The database connection.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
    *   The module handler.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   The config factory.
    */
   public function __construct(
     protected TimeInterface $time,
@@ -51,6 +54,7 @@ class AdminAuditTrailLogger {
     protected RequestStack $requestStack,
     protected Connection $database,
     protected ModuleHandlerInterface $moduleHandler,
+    protected ConfigFactoryInterface $configFactory,
   ) {}
 
   /**
@@ -72,8 +76,16 @@ class AdminAuditTrailLogger {
    */
   public function insert(array &$log): void {
     if ($this->isCliRequest()) {
-      // Ignore CLI requests.
-      return;
+      if (empty($this->configFactory->get('admin_audit_trail.settings')->get('log_cli'))) {
+        // Ignore CLI requests unless CLI logging is enabled (issue #3263615).
+        return;
+      }
+      // Flag the record as CLI-originated: the report's IP column reads
+      // "CLI" and the path carries the command line.
+      $log['ip'] = 'CLI';
+      if (empty($log['path'])) {
+        $log['path'] = 'cli: ' . implode(' ', $_SERVER['argv'] ?? []);
+      }
     }
 
     if (empty($log['created'])) {
