@@ -13,6 +13,7 @@ use Drupal\Tests\content_moderation\Traits\ContentModerationTestTrait;
 use Drupal\Tests\media\Traits\MediaTypeCreationTrait;
 use Drupal\user\Entity\User;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Tests that workflow transitions are logged for non-node entities.
@@ -23,6 +24,7 @@ use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
  * @group admin_audit_trail
  */
 #[RunTestsInSeparateProcesses]
+#[Group('admin_audit_trail')]
 class EntityWorkflowsTest extends KernelTestBase {
 
   use ContentModerationTestTrait;

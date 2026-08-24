@@ -8,6 +8,7 @@ use Drupal\admin_audit_trail\AdminAuditTrailLogger;
 use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\KernelTests\KernelTestBase;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Tests forwarding audit records to the PSR-3 logger.
@@ -19,6 +20,7 @@ use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
  * @group admin_audit_trail
  */
 #[RunTestsInSeparateProcesses]
+#[Group('admin_audit_trail')]
 class LoggerForwardingTest extends KernelTestBase {
 
   /**

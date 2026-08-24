@@ -89,7 +89,7 @@ function admin_audit_trail_update_10001() {
   $config_factory = \Drupal::configFactory()->getEditable('admin_audit_trail.settings');
   $config_factory->set('filter_expanded', FALSE);
   $config_factory->set('admin_audit_trail_row_limit', 0);
-  $config_factory->save(TRUE);
+  $config_factory->save();
 }
 
 /**

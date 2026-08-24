@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Drupal\Tests\admin_audit_trail\Unit;
 
 use Drupal\Tests\UnitTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Tests admin_audit_trail_safe_truncate(), used to trim the logged path.
  *
  * @group admin_audit_trail
  */
+#[Group('admin_audit_trail')]
 class AdminAuditTrailSafeTruncateTest extends UnitTestCase {
 
   /**

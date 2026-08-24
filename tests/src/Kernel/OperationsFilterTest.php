@@ -11,6 +11,7 @@ use Drupal\KernelTests\KernelTestBase;
 use Drupal\views\Entity\View;
 use Drupal\views\Views;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Tests the exposed "Operation" filter on the audit trail report.
@@ -22,6 +23,7 @@ use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
  * @group admin_audit_trail
  */
 #[RunTestsInSeparateProcesses]
+#[Group('admin_audit_trail')]
 class OperationsFilterTest extends KernelTestBase {
 
   /**

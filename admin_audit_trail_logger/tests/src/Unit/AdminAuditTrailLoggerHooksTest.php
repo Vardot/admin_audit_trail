@@ -10,6 +10,7 @@ use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Tests\UnitTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Unit tests for the PSR-3 forwarding alter hook.
@@ -17,6 +18,7 @@ use Drupal\Tests\UnitTestCase;
  * @coversDefaultClass \Drupal\admin_audit_trail_logger\Hook\AdminAuditTrailLoggerHooks
  * @group admin_audit_trail
  */
+#[Group('admin_audit_trail')]
 class AdminAuditTrailLoggerHooksTest extends UnitTestCase {
 
   /**

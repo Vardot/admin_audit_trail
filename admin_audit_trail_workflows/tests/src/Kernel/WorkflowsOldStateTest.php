@@ -11,6 +11,7 @@ use Drupal\node\Entity\NodeType;
 use Drupal\node\NodeInterface;
 use Drupal\Tests\content_moderation\Traits\ContentModerationTestTrait;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Tests that workflow transitions log the latest revision's old state.
@@ -28,6 +29,7 @@ use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
  * @group admin_audit_trail
  */
 #[RunTestsInSeparateProcesses]
+#[Group('admin_audit_trail')]
 class WorkflowsOldStateTest extends KernelTestBase {
 
   use ContentModerationTestTrait;

@@ -10,6 +10,7 @@ use Drupal\admin_audit_trail_menu\Hook\AdminAuditTrailMenuHooks;
 use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\menu_link_content\Entity\MenuLinkContent;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Tests that auditing a menu link translation deletion never breaks the site.
@@ -23,6 +24,7 @@ use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
  * @group admin_audit_trail
  */
 #[RunTestsInSeparateProcesses]
+#[Group('admin_audit_trail')]
 class MenuLinkContentTranslationDeleteTest extends KernelTestBase {
 
   /**

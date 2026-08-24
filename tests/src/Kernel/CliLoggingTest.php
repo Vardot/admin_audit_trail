@@ -7,6 +7,7 @@ namespace Drupal\Tests\admin_audit_trail\Kernel;
 use Drupal\admin_audit_trail\AdminAuditTrailLogger;
 use Drupal\KernelTests\KernelTestBase;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Tests the CLI logging option.
@@ -19,6 +20,7 @@ use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
  * @group admin_audit_trail
  */
 #[RunTestsInSeparateProcesses]
+#[Group('admin_audit_trail')]
 class CliLoggingTest extends KernelTestBase {
 
   /**

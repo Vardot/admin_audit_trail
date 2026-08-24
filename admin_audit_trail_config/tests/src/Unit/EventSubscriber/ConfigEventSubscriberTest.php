@@ -7,6 +7,7 @@ namespace Drupal\Tests\admin_audit_trail_config\Unit\EventSubscriber;
 use Drupal\admin_audit_trail_config\EventSubscriber\ConfigEventSubscriber;
 use Drupal\Core\Config\ConfigEvents;
 use Drupal\Tests\UnitTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Tests the configuration event subscriber wiring.
@@ -15,6 +16,7 @@ use Drupal\Tests\UnitTestCase;
  *
  * @coversDefaultClass \Drupal\admin_audit_trail_config\EventSubscriber\ConfigEventSubscriber
  */
+#[Group('admin_audit_trail')]
 class ConfigEventSubscriberTest extends UnitTestCase {
 
   /**
