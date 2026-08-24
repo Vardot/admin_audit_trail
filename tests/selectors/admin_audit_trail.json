@@ -70,7 +70,8 @@
     "logger mode psr3 only": "#edit-mode-psr3-only",
     "logger channel": "#edit-channel",
     "dblog rows": ".view-watchdog table.views-view-table tbody tr, table#admin-dblog tbody tr",
-    "settings log cli": "#edit-log-cli"
+    "settings log cli": "#edit-log-cli",
+    "dblog message cells": ".view-watchdog table.views-view-table td.views-field-message, table#admin-dblog td"
   },
   "xpath": {}
 }

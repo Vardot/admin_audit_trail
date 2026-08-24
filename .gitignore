@@ -20,5 +20,6 @@ tests/reports/**/*.pdf
 tests/reports/**/*.xml
 tests/screenshots/**/*.png
 tests/screenshots/**/*.jpeg
+tests/screenshots/**/*.html
 tests/videos/**/*.webm
 .cucumber.js.bak

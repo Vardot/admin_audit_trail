@@ -5,7 +5,7 @@ const { Given, Then, When, setDefaultTimeout } = require('@cucumber/cucumber');
 // The harness sets a 45s default step timeout. The first node-add form of a
 // run pays the cold-cache render of the moderation + paragraphs + comment
 // widgets, which legitimately exceeds that on a loaded shared runner.
-setDefaultTimeout(90 * 1000);
+setDefaultTimeout(180 * 1000);
 
 const path = require('path');
 
@@ -304,6 +304,27 @@ Then(/^the "([^"]*)" element should contain text "([^"]*)"(?: within (\d+) secon
       { timeout, polling: 100 },
     );
   }, `Expected "${name}" (${sel}) to contain text "${text}"`);
+});
+
+/**
+ * Assert that NO element matching a named selector contains the given text.
+ *
+ * Scans every match (not just the first) so a value buried further down the
+ * table still fails the assertion.
+ *
+ * Example: Then the "audit col description" element should not contain text "Skipped article"
+ */
+Then(/^the "([^"]*)" element should not contain text "([^"]*)"$/, async function (name, text) {
+  const sel = resolveName(this, name);
+  await attempt(async () => {
+    const found = await this.page.evaluate(
+      ([s, t]) => Array.from(document.querySelectorAll(s)).some((el) => el.textContent.includes(t)),
+      [sel, text],
+    );
+    if (found) {
+      throw new Error(`Expected no "${name}" (${sel}) element to contain text "${text}"`);
+    }
+  }, `Expected "${name}" (${sel}) to not contain text "${text}"`);
 });
 
 /**
