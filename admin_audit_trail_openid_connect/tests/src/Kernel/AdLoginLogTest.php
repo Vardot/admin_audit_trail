@@ -28,6 +28,26 @@ use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 class AdLoginLogTest extends KernelTestBase {
 
   /**
+   * Config object names excluded from strict schema checking.
+   *
+   * The openid_connect base client plugin's defaultConfiguration() contributes a
+   * 'provider_slug' setting, and setConfiguration() merges those defaults into
+   * every client entity on save. openid_connect_windows_aad does not declare
+   * that key in its own openid_connect.client.plugin.windows_aad schema, so the
+   * saved aad_client config legitimately fails strict schema checking through no
+   * fault of this test. The gap belongs upstream in openid_connect_windows_aad.
+   *
+   * Only this one config object is excluded, so every other config saved by this
+   * test is still schema checked. Remove this once the contrib schema declares
+   * provider_slug.
+   *
+   * @var string[]
+   */
+  protected static $configSchemaCheckerExclusions = [
+    'openid_connect.client.aad_client',
+  ];
+
+  /**
    * {@inheritdoc}
    */
   protected static $modules = [
