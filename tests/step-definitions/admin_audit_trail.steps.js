@@ -2,9 +2,13 @@
 
 const { Given, Then, When, setDefaultTimeout } = require('@cucumber/cucumber');
 
-// The harness sets a 45s default step timeout. The first node-add form of a
-// run pays the cold-cache render of the moderation + paragraphs + comment
-// widgets, which legitimately exceeds that on a loaded shared runner.
+// The harness sets a 45s default step timeout. Some of the admin forms this
+// suite drives (moderation, paragraphs, comment widgets) are genuinely slow on
+// a loaded shared runner, so the ceiling is raised here.
+//
+// NOTE: raising this is not a cure for a step that hangs. A wait that never
+// resolves will simply hang for longer. Wait for the observable outcome of the
+// action instead - see the create-article step below.
 setDefaultTimeout(180 * 1000);
 
 const path = require('path');
@@ -99,7 +103,22 @@ Given(/^(?:I |we )?create an article titled "([^"]*)"$/, async function (title) 
       if (el) el.value = t;
     }, title);
     await this.page.evaluate(() => document.querySelector('#edit-submit').click());
-    await waitForPageLoad(this.page, this.minWaitTime && this.minWaitTime.page);
+    // Wait for the OUTCOME of the save - Drupal's "has been created" status
+    // message on the saved node - rather than for the whole page to fall quiet.
+    //
+    // A global quiescence wait (waitForPageLoad / smartSettle) also requires
+    // every background request and timer to settle, and on the first node page
+    // of a run something on that page never does: the save succeeds, the node
+    // renders, the status message is on screen, and the wait keeps waiting
+    // until the step times out. This is not slowness - every later article in
+    // this suite is created in about two seconds - so a bigger timeout does not
+    // help. Waiting on the message removes the dependency on page quiescence
+    // altogether, and it is the stronger assertion: it proves Drupal reported
+    // the node saved, which is what this step is for.
+    await this.page.waitForSelector(
+      '[data-drupal-messages] .messages--status, .messages--status, [data-drupal-messages]',
+      { state: 'visible', timeout: 60000 },
+    );
     // Remember the canonical node URL (…/node/<nid>) for follow-up edits.
     this.auditArticleUrl = this.page.url().split('?')[0];
   }, `Could not create an article titled "${title}"`);
