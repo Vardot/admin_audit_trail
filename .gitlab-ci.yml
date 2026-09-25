@@ -26,6 +26,13 @@ variables:
   COMPOSER_FLAGS: "--no-strict-lock"
   COMPOSER_MEMORY_LIMIT: "-1"
 
+# Temporary (#3625828): Twig 3.30.0 compiles Drupal core's drupal_escape filter
+# into a direct EscaperRuntime::escape() call, so every page render is a fatal
+# TypeError. Keep the CI build below 3.30 until a fixed Twig release is out.
+.composer-base:
+  before_script:
+    - composer require --dev --no-update "twig/twig:<3.30"
+
 # = Validate stage (all blocking) =
 composer-lint:
   allow_failure: false

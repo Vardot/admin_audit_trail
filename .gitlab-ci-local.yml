@@ -113,7 +113,7 @@ varbase-e2e-test:
     - composer config --no-plugins allow-plugins.drupal/core-composer-scaffold true
     - composer config --no-plugins allow-plugins.drupal/core-project-message true
     - composer config repositories.aat path "$CI_PROJECT_DIR"
-    - composer require "drupal/admin_audit_trail:*" drupal/redirect drupal/entityqueue drupal/paragraphs "drupal/group:^3.3" drush/drush --no-interaction
+    - composer require "drupal/admin_audit_trail:*" drupal/redirect drupal/entityqueue drupal/paragraphs "drupal/group:^3.3" drush/drush "twig/twig:<3.30" --no-interaction
     # --- Install + enable + provide test fixtures --------------------------
     - vendor/bin/drush site:install standard --db-url="$DB_URL" --account-name=webmaster --account-pass=dD.123123ddd --site-name="Admin Audit Trail Test" -y
     # Make the tests/modules/ test helper discoverable by drush en.
