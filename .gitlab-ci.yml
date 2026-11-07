@@ -23,6 +23,9 @@ include:
       - "/includes/include.drupalci.workflows.yml"
 
 variables:
+  # No yarn.lock is committed; Yarn 4 defaults to immutable installs and would
+  # refuse to create one. Allow lockfile creation in CI for every job.
+  YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
   COMPOSER_FLAGS: "--no-strict-lock"
   COMPOSER_MEMORY_LIMIT: "-1"
 
@@ -32,6 +35,11 @@ variables:
 .composer-base:
   before_script:
     - composer require --dev --no-update "twig/twig:<3.30"
+  variables:
+    # Every composer job, variants included: Drupal core's own Yarn 4.9.1 would
+    # read the project .yarnrc.yml (Yarn >= 4.14 keys) too.
+    YARN_RC_FILENAME: .yarnrc.core.yml
+    YARN_NODE_LINKER: node-modules
 
 # = Validate stage (all blocking) =
 composer-lint:
@@ -49,6 +57,12 @@ phpunit:
   variables:
     _PHPUNIT_EXTRA: ''
 
+stylelint:
+  variables:
+    # Drupal core's own Yarn 4.9.1 would read the project .yarnrc.yml (Yarn >= 4.14 keys) too.
+    YARN_RC_FILENAME: .yarnrc.core.yml
+    YARN_NODE_LINKER: node-modules
+
 # = Reusable before_script fragments (via !reference) =
 .fragments:
   web_db: &web_db
@@ -62,7 +76,7 @@ phpunit:
     - export SIMPLETEST_DB=mysql://$MYSQL_USER:$MYSQL_PASSWORD@database/$MYSQL_DATABASE
   node_playwright: &node_playwright
 
-    - curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+    - curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
     - apt-get install -y nodejs
     - node --version && npm --version
     - 'test -f .yarnrc.yml || echo "nodeLinker: node-modules" > .yarnrc.yml'

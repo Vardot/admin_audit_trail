@@ -6,7 +6,7 @@
 # is not a public path). This file reproduces the same work in a self-contained
 # way so the whole thing can be exercised locally before pushing:
 #
-#   validate : cspell + eslint linters (Node 20)
+#   validate : cspell + eslint linters (Node 24)
 #   pages    : MkDocs --strict build
 #   test     : varbase-e2e BDD suite against a freshly built Drupal 11 site
 #              (MariaDB service + `drush runserver`, the module added via a
@@ -29,7 +29,7 @@ variables:
 
 cspell:
   stage: validate
-  image: node:20
+  image: node:24
   before_script:
     - npm install -g cspell
   script:
@@ -38,7 +38,7 @@ cspell:
 
 eslint:
   stage: validate
-  image: node:20
+  image: node:24
   before_script:
     - corepack enable
     - yarn install
@@ -69,7 +69,7 @@ pages:
 # exact working-tree code is what gets exercised.
 varbase-e2e-test:
   stage: test
-  image: node:20-bookworm
+  image: node:24-bookworm
   # MariaDB service (Drupal 11 needs SQLite >= 3.45, newer than Debian ships,
   # so use a DB server - the same way the real drupalci pipeline does).
   services:
