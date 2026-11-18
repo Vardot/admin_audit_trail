@@ -23,6 +23,8 @@ include:
       - "/includes/include.drupalci.workflows.yml"
 
 variables:
+  # PHP 8.5 for the drupalci job images (the template default is PHP 8.3).
+  _TARGET_PHP: "8.5"
   # No yarn.lock is committed; Yarn 4 defaults to immutable installs and would
   # refuse to create one. Allow lockfile creation in CI for every job.
   YARN_ENABLE_IMMUTABLE_INSTALLS: "false"

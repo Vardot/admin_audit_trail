@@ -88,13 +88,13 @@ varbase-e2e-test:
     # serialising them (which would deadlock a single-worker server).
     PHP_CLI_SERVER_WORKERS: "8"
   before_script:
-    # --- PHP 8.3 (Sury repo - bookworm ships 8.2, Drupal 11 needs >=8.3) ----
+    # --- PHP 8.5 (Sury repo - bookworm ships 8.2, Drupal 11 needs >=8.3) ----
     - apt-get update -qq
     - apt-get install -y -qq lsb-release ca-certificates curl unzip git apt-transport-https >/dev/null
     - curl -sSL https://packages.sury.org/php/apt.gpg -o /etc/apt/trusted.gpg.d/sury-php.gpg
     - echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/sury-php.list
     - apt-get update -qq
-    - apt-get install -y -qq php8.3-cli php8.3-mysql php8.3-gd php8.3-mbstring php8.3-xml php8.3-curl php8.3-zip default-mysql-client >/dev/null
+    - apt-get install -y -qq php8.5-cli php8.5-mysql php8.5-gd php8.5-mbstring php8.5-xml php8.5-curl php8.5-zip default-mysql-client >/dev/null
     - php -v | head -n1
     # Wait for the MariaDB service to accept connections.
     - for i in $(seq 1 60); do mysqladmin --host=database --user=root ping >/dev/null 2>&1 && break; sleep 2; done
