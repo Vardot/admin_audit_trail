@@ -1,7 +1,7 @@
 name: "Admin Audit Trail Logger"
 description: "Forwards Admin Audit Trail events to the PSR-3 logger (syslog, Monolog, etc.)."
 type: module
-core_version_requirement: ^10.1 || ^11 || ^12
+core_version_requirement: ^10.6 || ^11.4 || ^12
 package: Administration
 configure: admin_audit_trail_logger.settings
 dependencies:

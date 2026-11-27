@@ -1,7 +1,7 @@
 name: "Admin Audit Trail Media"
 description: "Logs node CUD events performed by the user."
 type: module
-core_version_requirement: ^10.1 || ^11 || ^12
+core_version_requirement: ^10.6 || ^11.4 || ^12
 package: Administration
 dependencies:
   - admin_audit_trail:admin_audit_trail
